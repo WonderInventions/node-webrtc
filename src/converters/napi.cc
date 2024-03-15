@@ -111,7 +111,7 @@ FROM_NAPI_IMPL(uint64_t, value) {
         maybeNumber.Env().GetAndClearPendingException().Message());
   }
   auto doubleValue = maybeNumber.DoubleValue();
-  if (doubleValue < 0 || (uint64_t)doubleValue > UINT64_MAX) {
+  if (doubleValue < 0 || doubleValue > UINT64_MAX) {
     return Validation<uint64_t>::Invalid("Expected a 64-bit unsigned integer");
   }
   return Pure(static_cast<uint64_t>(maybeNumber.DoubleValue()));
@@ -194,7 +194,7 @@ FROM_NAPI_IMPL(int64_t, value) {
         maybeNumber.Env().GetAndClearPendingException().Message());
   }
   auto doubleValue = maybeNumber.DoubleValue();
-  if ((int64_t)doubleValue < INT64_MIN || (int64_t)doubleValue > INT64_MAX) {
+  if (doubleValue < INT64_MIN || doubleValue > INT64_MAX) {
     return Validation<int64_t>::Invalid("Expected a 64-bit integer");
   }
   return Pure(maybeNumber.Int64Value());

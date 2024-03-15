@@ -35,9 +35,13 @@ namespace node_webrtc {
 
 class PeerConnectionFactory : public Napi::ObjectWrap<PeerConnectionFactory> {
 public:
+  PeerConnectionFactory(const PeerConnectionFactory &) = delete;
+  PeerConnectionFactory(PeerConnectionFactory &&) = delete;
+  PeerConnectionFactory &operator=(const PeerConnectionFactory &) = delete;
+  PeerConnectionFactory &operator=(PeerConnectionFactory &&) = delete;
   explicit PeerConnectionFactory(const Napi::CallbackInfo &);
 
-  ~PeerConnectionFactory();
+  ~PeerConnectionFactory() override;
 
   /**
    * Get or create the default PeerConnectionFactory. The default uses

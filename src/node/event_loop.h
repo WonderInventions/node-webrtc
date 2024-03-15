@@ -13,6 +13,10 @@ namespace node_webrtc {
 
 template <typename T> class EventLoop : private EventQueue<T> {
 public:
+  EventLoop(const EventLoop &) = delete;
+  EventLoop(EventLoop &&) = delete;
+  EventLoop &operator=(const EventLoop &) = delete;
+  EventLoop &operator=(EventLoop &&) = delete;
   virtual ~EventLoop() = default;
 
   void Dispatch(std::unique_ptr<Event<T>> event) {
