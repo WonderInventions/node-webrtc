@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include <src/modules/audio_device/include/test_audio_device.h>
 #include <webrtc/api/audio_codecs/builtin_audio_decoder_factory.h>
 #include <webrtc/api/audio_codecs/builtin_audio_encoder_factory.h>
 #include <webrtc/api/create_peerconnection_factory.h>
@@ -71,6 +70,7 @@ PeerConnectionFactory::PeerConnectionFactory(const Napi::CallbackInfo &info)
   (void)result;
 
   _taskQueueFactory = webrtc::CreateDefaultTaskQueueFactory();
+  assert(_taskQueueFactory != nullptr);
 
   _audioDeviceModule =
       _workerThread->Invoke<rtc::scoped_refptr<webrtc::AudioDeviceModule>>(
