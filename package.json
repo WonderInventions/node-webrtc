@@ -45,7 +45,7 @@
     "temp": "^0.9.4"
   },
   "scripts": {
-    "postinstall": "patch-package --error-on-warn",
+    "postinstall": "patch-package",
     "build": "node scripts/build-from-source.js",
     "make-prebuilt": "node scripts/make-prebuilt.js",
     "install-example": "node scripts/install-example.js",
