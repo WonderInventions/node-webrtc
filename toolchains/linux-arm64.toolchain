@@ -6,7 +6,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-set(arm_bindir /home/user/node-webrtc/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin) # Change this if necessary
+set(arm_bindir /opt/gcc-arm-none-linux/bin) # Change this if necessary
 # These compilers should come with a sysroot built in.
 # If not, set CMAKE_SYSROOT accordingly
 set(CMAKE_C_COMPILER ${arm_bindir}/aarch64-none-linux-gnu-gcc)

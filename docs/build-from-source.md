@@ -11,7 +11,8 @@ required by cmake-js, you will need
 - CMake 3.15 or newer
 - Linux: GCC 10.1 or newer
 - MacOS: Xcode 12 or newer
-  - MacOSX11.3.sdk installed, see https://github.com/phracker/MacOSX-SDKs
+  - MacOSX11.3.sdk via git clone https://github.com/phracker/MacOSX-SDKs
+  - linked via `sudo ln -s /Users/path/to/MacOSX-SDKs/MacOSX11.3.sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk`
 - Windows: Microsoft Visual Studio 2022 or newer, with the Clang toolchain installed
 - Check the [additional prerequisites listed by WebRTC](https://webrtc.github.io/webrtc-org/native-code/development/prerequisite-sw/) - although their install is automated by the CMake scripts provided
 
