@@ -196,7 +196,7 @@ class TestAudioDeviceModuleImpl // NOLINT(cppcoreguidelines-special-member-funct
           int64_t ntp_time_ms = -1;
           // FIXME(jack): mroberts u silly billy this code is racy too! don't just
           // ignore those warnings please!!
-          /*
+          
           const int sampling_frequency = renderer_->SamplingFrequency();
           if (audio_callback_) {
             audio_callback_->NeedMorePlayData(
@@ -204,7 +204,7 @@ class TestAudioDeviceModuleImpl // NOLINT(cppcoreguidelines-special-member-funct
                 sampling_frequency, playout_buffer_.data(), samples_out,
                 &elapsed_time_ms, &ntp_time_ms);
           }
-          */
+          
           const bool keep_rendering =
               renderer_->Render(rtc::ArrayView<const int16_t>(
                       playout_buffer_.data(), samples_out));

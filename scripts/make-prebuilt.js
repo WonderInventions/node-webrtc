@@ -21,7 +21,7 @@ const main_package = require(`../${main_package_filename}`);
 const sub_package = require(`../${sub_package_filename}`);
 
 const version = main_package.version;
-main_package.optionalDependencies[`@roamhq/wrtc-${platform}-${arch}`] = version;
+main_package.optionalDependencies[`@avahq/wrtc-${platform}-${arch}`] = version;
 sub_package.version = version;
 
 fs.writeFileSync(main_package_filename, JSON.stringify(main_package, null, 2));

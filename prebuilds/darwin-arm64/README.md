@@ -1,4 +1,4 @@
 # wrtc
 
-This is the MacOS 64-bit ARM binary build for @roamhq/wrtc.
+This is the MacOS 64-bit ARM binary build for @avahq/wrtc.
 See https://github.com/WonderInventions/node-webrtc for details.

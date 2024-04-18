@@ -1,12 +1,12 @@
 {
-  "name": "@roamhq/wrtc",
+  "name": "@avahq/wrtc",
   "description": "Standards-compliant WebRTC implementation for Node",
   "keywords": [
     "webrtc",
     "p2p",
     "peer"
   ],
-  "version": "0.7.2",
+  "version": "0.7.6-fixondata.0",
   "author": "Alan K <ack@modeswitch.org> (http://blog.modeswitch.org)",
   "homepage": "https://github.com/WonderInventions/node-webrtc",
   "bugs": "https://github.com/WonderInventions/node-webrtc/issues",
@@ -25,11 +25,10 @@
     "types"
   ],
   "optionalDependencies": {
-    "@roamhq/wrtc-darwin-arm64": "0.7.2",
-    "@roamhq/wrtc-darwin-x64": "0.7.2",
-    "@roamhq/wrtc-linux-arm64": "0.7.2",
-    "@roamhq/wrtc-linux-x64": "0.7.2",
-    "@roamhq/wrtc-win32-x64": "0.7.2",
+    "@avahq/wrtc-darwin-arm64": "^0.7.3-fixondata.0",
+    "@avahq/wrtc-darwin-x64": "^0.7.3-fixondata.0",
+    "@avahq/wrtc-linux-arm64": "^0.7.3-fixondata.0",
+    "@avahq/wrtc-linux-x64": "^0.7.3-fixondata.0",
     "domexception": "^4.0.0"
   },
   "devDependencies": {
@@ -45,7 +44,7 @@
     "temp": "^0.9.4"
   },
   "scripts": {
-    "postinstall": "patch-package --error-on-warn",
+    "postinstall": "patch-package",
     "build": "node scripts/build-from-source.js",
     "make-prebuilt": "node scripts/make-prebuilt.js",
     "install-example": "node scripts/install-example.js",
