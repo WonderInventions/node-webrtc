@@ -6,7 +6,7 @@
     "p2p",
     "peer"
   ],
-  "version": "0.7.6-fixondata.0",
+  "version": "0.7.6-fixondata.1",
   "author": "Alan K <ack@modeswitch.org> (http://blog.modeswitch.org)",
   "homepage": "https://github.com/WonderInventions/node-webrtc",
   "bugs": "https://github.com/WonderInventions/node-webrtc/issues",
