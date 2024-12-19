@@ -16,6 +16,8 @@
 #include <cassert>
 #include <functional>
 #include <type_traits>
+#include <utility>
+#include <variant>
 
 namespace node_webrtc {
 
@@ -27,9 +29,6 @@ namespace node_webrtc {
  */
 template <typename L, typename R> class Either {
 public:
-  // TODO(mroberts): This is no good.
-  Either() : _is_right(false), _left(L()), _right(R()) {}
-
   /**
    * Either forms an applicative. Apply an Either.
    * @tparam F the type of a function from R to S
@@ -37,28 +36,31 @@ public:
    * @return the result of applying the Either
    */
   template <typename F>
-  Either<L, typename std::result_of<F(R)>::type>
+  Either<L, typename std::invoke_result_t<F, R>>
   Apply(const Either<L, F> f) const {
     if (f.IsLeft()) {
-      return Either<L, typename std::result_of<F(R)>::type>::Left(
+      return Either<L, typename std::invoke_result_t<F, R>>::Left(
           f.UnsafeFromLeft());
-    } else if (IsLeft()) {
-      return Either<L, typename std::result_of<F(R)>::type>::Left(_left);
     }
-    return Either<L, typename std::result_of<F(R)>::type>::Left(_right);
+    if (IsLeft()) {
+      return Either<L, typename std::invoke_result_t<F, R>>::Left(
+          UnsafeFromLeft());
+    }
+    return Either<L, typename std::invoke_result_t<F, R>>::Left(
+        UnsafeFromRight());
   }
 
   /**
    * Check whether or not the Either is "left".
    * @return true if the Either is left; otherwise, false
    */
-  bool IsLeft() const { return !_is_right; }
+  [[nodiscard]] bool IsLeft() const { return !_is_right; }
 
   /**
    * Check whether or not the Either is "right".
    * @return true if the Either is right; otherwise, false
    */
-  bool IsRight() const { return _is_right; }
+  [[nodiscard]] bool IsRight() const { return _is_right; }
 
   /**
    * Eliminate an Either. You must provide two functions for both the left and
@@ -71,7 +73,8 @@ public:
   template <typename T>
   T FromEither(std::function<T(const L)> fromLeft,
                std::function<T(const R)> fromRight) const {
-    return _is_right ? fromRight(_right) : fromLeft(_left);
+    return _is_right ? fromRight(UnsafeFromRight())
+                     : fromLeft(UnsafeFromLeft());
   }
 
   /**
@@ -81,7 +84,7 @@ public:
    * @return the value in the Either, if "left"; otherwise, the default value
    */
   L FromLeft(const L default_value) const {
-    return _is_right ? default_value : _left;
+    return _is_right ? default_value : UnsafeFromLeft();
   }
 
   /**
@@ -91,7 +94,7 @@ public:
    * @return the value in the Either, if "right"; otherwise, the default value
    */
   R FromRight(const R default_value) const {
-    return _is_right ? _right : default_value;
+    return _is_right ? UnsafeFromRight() : default_value;
   }
 
   /**
@@ -101,11 +104,11 @@ public:
    * @return the mapped Either
    */
   template <typename F>
-  Either<L, typename std::result_of<F(R)>::type> Map(F f) const {
-    return _is_right
-               ? Either<L, typename std::result_of<F(R)>::type>::Right(
-                     f(_right))
-               : Either<L, typename std::result_of<F(R)>::type>::Left(_left);
+  Either<L, typename std::invoke_result_t<F, R>> Map(F f) const {
+    return _is_right ? Either<L, typename std::invoke_result_t<F, R>>::Right(
+                           f(UnsafeFromRight()))
+                     : Either<L, typename std::invoke_result_t<F, R>>::Left(
+                           UnsafeFromLeft());
   }
 
   /**
@@ -124,7 +127,7 @@ public:
    */
   L UnsafeFromLeft() const {
     assert(!_is_right);
-    return _left;
+    return std::get<0>(_value);
   }
 
   /**
@@ -133,7 +136,7 @@ public:
    */
   R UnsafeFromRight() const {
     assert(_is_right);
-    return _right;
+    return std::get<1>(_value);
   }
 
   /**
@@ -141,22 +144,26 @@ public:
    * @param left the value to inject into the Either
    * @return a left Either
    */
-  static Either<L, R> Left(const L left) { return Either(false, left, R()); }
+  static Either<L, R> Left(const L left) { return Either(false, left); }
 
   /**
    * Construct a "right" Either.
    * @param right the value to inject into the Either
    * @return a right Either
    */
-  static Either<L, R> Right(const R right) { return Either(true, L(), right); }
+  static Either<L, R> Right(const R right) {
+    return Either(true, std::variant<L, R>(std::in_place_index<1>, right));
+  }
 
 private:
-  Either(bool is_right, const L left, const R right)
-      : _is_right(is_right), _left(left), _right(right) {}
+  Either(bool is_right, const std::variant<L, R> value)
+      : _is_right(is_right), _value(value) {}
 
+  // Needed to know what index to access. It is entirely legal to make a
+  // std::variant<int, int>, and in that case, the only way to get the second
+  // int is to std::get<1>
   bool _is_right;
-  L _left;
-  R _right;
+  std::variant<L, R> _value;
 };
 
 template <typename L, typename R> static Either<L, R> MakeRight(const R right) {
