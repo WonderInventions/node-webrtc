@@ -20,9 +20,9 @@ public:
   virtual ~EventLoop() = default;
 
   void Dispatch(std::unique_ptr<Event<T>> event) {
-    this->Enqueue(std::move(event));
     _lock.lock();
     if (!uv_is_closing(reinterpret_cast<uv_handle_t *>(&_async))) {
+      this->Enqueue(std::move(event));
       uv_async_send(&_async);
     }
     _lock.unlock();

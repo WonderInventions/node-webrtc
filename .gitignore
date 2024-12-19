@@ -4,6 +4,7 @@
 .DS_Store
 .cache
 .direnv
+.eslintcache
 .idea
 .travis.yml
 .vim

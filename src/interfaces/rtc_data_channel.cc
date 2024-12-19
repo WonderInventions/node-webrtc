@@ -7,6 +7,7 @@
  */
 #include "src/interfaces/rtc_data_channel.h"
 
+#include <iostream>
 #include <utility>
 
 #include <webrtc/api/data_channel_interface.h>
@@ -95,14 +96,12 @@ RTCDataChannel::RTCDataChannel(const Napi::CallbackInfo &info)
 }
 
 RTCDataChannel::~RTCDataChannel() {
+  std::cout << "~RTCDataChannel(): start\n";
   _factory->Unref();
   _factory = nullptr;
 
   wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
+  std::cout << "~RTCDataChannel(): end\n";
 }
 
 void RTCDataChannel::CleanupInternals() {
@@ -364,7 +363,6 @@ RTCDataChannel *RTCDataChannel::Create(
       {Napi::External<node_webrtc::DataChannelObserver>::New(env, observer)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

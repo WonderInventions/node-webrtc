@@ -8,9 +8,13 @@
 #pragma once
 
 #include "src/utilities/bidi_map.h"
+#include <iostream>
 
 namespace node_webrtc {
 
+/**
+ * Class that provides weak ownership of types `T`, caching based on a key `U`.
+ */
 template <typename T, typename U, typename... V> class Wrap {
 public:
   Wrap(Wrap const &) = delete;
