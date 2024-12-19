@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-const test = require('tape');
+const test = require("tape");
 
-const { RTCPeerConnection } = require('..');
+const { RTCPeerConnection } = require("..");
 
 const offer = {
-  type: 'offer',
+  type: "offer",
   sdp: `\
 v=0
 o=- 2327044227424838191 2 IN IP4 127.0.0.1
@@ -23,19 +23,19 @@ a=setup:actpass
 a=mid:0
 a=sctpmap:5000 webrtc-datachannel 1024
 `
-    .split('\n')
-    .join('\r\n'),
+    .split("\n")
+    .join("\r\n"),
 };
 
 const candidate = {
   candidate:
-    'candidate:559267639 1 udp 2122267903 ::1 57693 typ host generation 0 ufrag ZVjA network-id 2',
-  sdpMid: '0',
+    "candidate:559267639 1 udp 2122267903 ::1 57693 typ host generation 0 ufrag ZVjA network-id 2",
+  sdpMid: "0",
   sdpMLineIndex: 0,
 };
 
-test('addIceCandidate', (t) => {
-  test('has correct queueing behavior', (t) => {
+test("addIceCandidate", (t) => {
+  test("has correct queueing behavior", (t) => {
     const pc = new RTCPeerConnection();
     return Promise.all([
       pc.setRemoteDescription(offer),
@@ -46,7 +46,7 @@ test('addIceCandidate', (t) => {
       })
       .then(() => {
         pc.close();
-        t.pass('addIceCandidate worked correctly');
+        t.pass("addIceCandidate worked correctly");
         t.end();
       });
   });

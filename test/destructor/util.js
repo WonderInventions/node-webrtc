@@ -1,7 +1,7 @@
 /* globals gc */
-'use strict';
+"use strict";
 
-const { createHook } = require('async_hooks');
+const { createHook } = require("async_hooks");
 
 /**
  * @interface Deferred<T>
@@ -26,37 +26,37 @@ function createDeferred() {
 }
 
 const typesToIgnore = new Set([
-  'FSEVENTWRAP',
-  'FSREQCALLBACK',
-  'GETADDRINFOREQWRAP',
-  'GETNAMEINFOREQWRAP',
-  'HTTPCLIENTREQUEST',
-  'HTTPINCOMINGMESSAGE',
-  'Immediate',
-  'JSSTREAM',
-  'Microtask',
-  'PBKDF2REQUEST',
-  'PIPECONNECTWRAP',
-  'PIPEWRAP',
-  'PROCESSWRAP',
-  'PROMISE',
-  'QUERYWRAP',
-  'RANDOMBYTESREQUEST',
-  'SHUTDOWNWRAP',
-  'SIGNALWRAP',
-  'SSLCONNECTION',
-  'STATWATCHER',
-  'TCPCONNECTWRAP',
-  'TCPSERVERWRAP',
-  'TCPWRAP',
-  'TLSWRAP',
-  'TTYWRAP',
-  'TickObject',
-  'Timeout',
-  'UDPSENDWRAP',
-  'UDPWRAP',
-  'WRITEWRAP',
-  'ZLIB',
+  "FSEVENTWRAP",
+  "FSREQCALLBACK",
+  "GETADDRINFOREQWRAP",
+  "GETNAMEINFOREQWRAP",
+  "HTTPCLIENTREQUEST",
+  "HTTPINCOMINGMESSAGE",
+  "Immediate",
+  "JSSTREAM",
+  "Microtask",
+  "PBKDF2REQUEST",
+  "PIPECONNECTWRAP",
+  "PIPEWRAP",
+  "PROCESSWRAP",
+  "PROMISE",
+  "QUERYWRAP",
+  "RANDOMBYTESREQUEST",
+  "SHUTDOWNWRAP",
+  "SIGNALWRAP",
+  "SSLCONNECTION",
+  "STATWATCHER",
+  "TCPCONNECTWRAP",
+  "TCPSERVERWRAP",
+  "TCPWRAP",
+  "TLSWRAP",
+  "TTYWRAP",
+  "TickObject",
+  "Timeout",
+  "UDPSENDWRAP",
+  "UDPWRAP",
+  "WRITEWRAP",
+  "ZLIB",
 ]);
 
 function trackDestructors() {
@@ -83,12 +83,12 @@ function trackDestructors() {
   function getDestructorPromise(resource) {
     const asyncId = asyncIds.get(resource);
     if (!asyncId) {
-      return Promise.reject(new Error('Unknown resource'));
+      return Promise.reject(new Error("Unknown resource"));
     }
     const destructorDeferred = destructorDeferreds.get(asyncId);
     return destructorDeferred
       ? destructorDeferred.promise
-      : Promise.reject(new Error('Unknown asyncId'));
+      : Promise.reject(new Error("Unknown asyncId"));
   }
 
   const interval = setInterval(gc);

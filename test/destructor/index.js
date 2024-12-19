@@ -1,22 +1,22 @@
-'use strict';
+"use strict";
 
-const test = require('tape');
+const test = require("tape");
 
-const { RTCPeerConnection, getUserMedia } = require('../..');
+const { RTCPeerConnection, getUserMedia } = require("../..");
 
 const { RTCAudioSink, RTCAudioSource, RTCVideoSink, RTCVideoSource } =
-  require('../..').nonstandard;
+  require("../..").nonstandard;
 
-const { negotiateRTCPeerConnections } = require('../lib/pc');
-const { createDeferred, trackDestructors } = require('./util');
+const { negotiateRTCPeerConnections } = require("../lib/pc");
+const { createDeferred, trackDestructors } = require("./util");
 
 async function waitUntilOpen(dataChannel) {
-  if (dataChannel.readyState === 'open') {
+  if (dataChannel.readyState === "open") {
     return;
   }
   await new Promise((resolve) => {
-    dataChannel.addEventListener('open', function onopen() {
-      dataChannel.removeEventListener('open', onopen);
+    dataChannel.addEventListener("open", function onopen() {
+      dataChannel.removeEventListener("open", onopen);
       resolve();
     });
   });
@@ -28,11 +28,11 @@ async function setupRTCDataChannels() {
 
   const [pc1, pc2] = await negotiateRTCPeerConnections({
     withPc1(pc1) {
-      dc1 = pc1.createDataChannel('test');
+      dc1 = pc1.createDataChannel("test");
     },
     withPc2(pc2) {
-      pc2.addEventListener('datachannel', function ondatachannel({ channel }) {
-        pc2.removeEventListener('datachannel', ondatachannel);
+      pc2.addEventListener("datachannel", function ondatachannel({ channel }) {
+        pc2.removeEventListener("datachannel", ondatachannel);
         dc2Deferred.resolve(channel);
       });
     },
@@ -50,7 +50,7 @@ async function setupRTCDataChannels() {
 }
 
 // OK
-test('RTCPeerConnection\'s destructor fires', async (t) => {
+test("RTCPeerConnection's destructor fires", async (t) => {
   const { destructor, stop } = trackDestructors();
 
   await (() => {
@@ -64,7 +64,7 @@ test('RTCPeerConnection\'s destructor fires', async (t) => {
 });
 
 // Hangs
-test('Destructors fire in RTCDataChannel use-case', async (t) => {
+test("Destructors fire in RTCDataChannel use-case", async (t) => {
   const { destructor, stop } = trackDestructors();
 
   await (async () => {
@@ -99,7 +99,7 @@ test('Destructors fire in RTCDataChannel use-case', async (t) => {
 });
 
 // Error: Failed to set ICE candidate; RTCPeerConnection is closed.
-test('Destructors fire in MediaStreamTrack use-case', async (t) => {
+test("Destructors fire in MediaStreamTrack use-case", async (t) => {
   const { destructor, stop } = trackDestructors();
 
   await (async () => {
@@ -182,11 +182,11 @@ async function testSink(kind, t) {
 }
 
 // Hangs
-test('RTCAudioSink\'s destructor fires', (t) => {
-  testSink('audio', t);
+test("RTCAudioSink's destructor fires", (t) => {
+  testSink("audio", t);
 });
 
 // Hangs
-test('RTCVideoSink\'s destructor fires', (t) => {
-  testSink('video', t);
+test("RTCVideoSink's destructor fires", (t) => {
+  testSink("video", t);
 });

@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
-const test = require('tape');
+const test = require("tape");
 
-const { getUserMedia } = require('..');
+const { getUserMedia } = require("..");
 
-test('getSettings', t => {
+test("getSettings", (t) => {
   return getUserMedia({
     audio: true,
     video: true,
-  }).then(media => {
+  }).then((media) => {
     let audioTrack = media.getAudioTracks()[0];
     // TODO(jack): assert some properties about these maybe? perhaps when I
     // switch away from getUserMedia

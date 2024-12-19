@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const { i420ToRgba, rgbaToI420 } = require('../..').nonstandard;
+const { i420ToRgba, rgbaToI420 } = require("../..").nonstandard;
 
 class I420Frame {
   constructor(width = 640, height = 480) {
@@ -17,9 +17,11 @@ class I420Frame {
   }
 
   get byteLength() {
-    return this.sizeOfLuminancePlane  // Y
-         + this.sizeOfChromaPlane     // U
-         + this.sizeOfChromaPlane;    // V
+    return (
+      this.sizeOfLuminancePlane + // Y
+      this.sizeOfChromaPlane + // U
+      this.sizeOfChromaPlane
+    ); // V
   }
 
   get sizeOfLuminancePlane() {
