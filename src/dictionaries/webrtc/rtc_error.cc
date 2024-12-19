@@ -1,11 +1,11 @@
-#include "src/dictionaries/webrtc/rtc_error.h"
+#include "src/dictionaries/webrtc/rtc_error.hh"
 
 #include <node-addon-api/napi.h>
 #include <utility>
 #include <webrtc/api/rtc_error.h>
 
-#include "src/functional/validation.h"
-#include "src/node/error_factory.h"
+#include "src/functional/validation.hh"
+#include "src/node/error_factory.hh"
 
 namespace node_webrtc {
 

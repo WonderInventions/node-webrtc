@@ -1,6 +1,6 @@
-#include "src/converters/webrtc.h"
+#include "src/converters/webrtc.hh"
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

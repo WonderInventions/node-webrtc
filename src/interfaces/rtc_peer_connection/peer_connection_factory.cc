@@ -5,7 +5,7 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "peer_connection_factory.h"
+#include "peer_connection_factory.hh"
 
 #include <memory>
 
@@ -25,8 +25,8 @@
 #include <webrtc/rtc_base/ssl_adapter.h>
 #include <webrtc/rtc_base/thread.h>
 
-#include "src/functional/maybe.h"
-#include "src/webrtc/test_audio_device_module.h"
+#include "src/functional/maybe.hh"
+#include "src/webrtc/test_audio_device_module.hh"
 
 namespace node_webrtc {
 

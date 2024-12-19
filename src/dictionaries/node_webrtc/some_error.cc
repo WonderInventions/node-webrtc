@@ -1,4 +1,4 @@
-#include "src/dictionaries/node_webrtc/some_error.h"
+#include "src/dictionaries/node_webrtc/some_error.hh"
 
 #include <webrtc/api/rtc_error.h>
 

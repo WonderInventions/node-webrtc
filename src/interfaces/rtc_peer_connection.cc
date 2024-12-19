@@ -5,7 +5,7 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_peer_connection.h"
+#include "src/interfaces/rtc_peer_connection.hh"
 
 #include <webrtc/api/media_types.h>
 #include <webrtc/api/peer_connection_interface.h>
@@ -14,43 +14,43 @@
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/p2p/client/basic_port_allocator.h>
 
-#include "src/converters.h"
-#include "src/converters/absl.h" // IWYU pragma: keep. Needed for conversions
-#include "src/converters/arguments.h"
-#include "src/converters/interfaces.h" // IWYU pragma: keep. Needed for conversions.
-#include "src/converters/napi.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/node_webrtc/rtc_answer_options.h"
-#include "src/dictionaries/node_webrtc/rtc_offer_options.h"
-#include "src/dictionaries/node_webrtc/rtc_session_description_init.h"
-#include "src/dictionaries/node_webrtc/some_error.h"
-#include "src/dictionaries/webrtc/data_channel_init.h"
-#include "src/dictionaries/webrtc/ice_candidate_interface.h"
-#include "src/dictionaries/webrtc/rtc_configuration.h" // IWYU pragma: keep. Needed for conversions.
-#include "src/dictionaries/webrtc/rtc_error.h"
-#include "src/dictionaries/webrtc/rtp_transceiver_init.h"
-#include "src/enums/webrtc/ice_connection_state.h" // IWYU pragma: keep. Needed for conversions
-#include "src/enums/webrtc/ice_gathering_state.h" // IWYU pragma: keep. Needed for conversions
-#include "src/enums/webrtc/media_type.h" // IWYU pragma: keep. Needed for conversions.
-#include "src/enums/webrtc/peer_connection_state.h" // IWYU pragma: keep. Needed for conversions.
-#include "src/enums/webrtc/signaling_state.h" // IWYU pragma: keep. Needed for conversions.
-#include "src/functional/either.h"
-#include "src/functional/maybe.h"
-#include "src/interfaces/media_stream.h"
-#include "src/interfaces/media_stream_track.h"
-#include "src/interfaces/rtc_data_channel.h"
-#include "src/interfaces/rtc_peer_connection/create_session_description_observer.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/interfaces/rtc_peer_connection/rtc_stats_collector.h"
-#include "src/interfaces/rtc_peer_connection/set_session_description_observer.h"
-#include "src/interfaces/rtc_rtp_receiver.h"
-#include "src/interfaces/rtc_rtp_sender.h"
-#include "src/interfaces/rtc_rtp_transceiver.h"
-#include "src/interfaces/rtc_sctp_transport.h"
-#include "src/node/error_factory.h"
-#include "src/node/events.h"
-#include "src/node/promise.h"
-#include "src/node/utility.h"
+#include "src/converters.hh"
+#include "src/converters/absl.hh" // IWYU pragma: keep. Needed for conversions
+#include "src/converters/arguments.hh"
+#include "src/converters/interfaces.hh" // IWYU pragma: keep. Needed for conversions.
+#include "src/converters/napi.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/node_webrtc/rtc_answer_options.hh"
+#include "src/dictionaries/node_webrtc/rtc_offer_options.hh"
+#include "src/dictionaries/node_webrtc/rtc_session_description_init.hh"
+#include "src/dictionaries/node_webrtc/some_error.hh"
+#include "src/dictionaries/webrtc/data_channel_init.hh"
+#include "src/dictionaries/webrtc/ice_candidate_interface.hh"
+#include "src/dictionaries/webrtc/rtc_configuration.hh" // IWYU pragma: keep. Needed for conversions.
+#include "src/dictionaries/webrtc/rtc_error.hh"
+#include "src/dictionaries/webrtc/rtp_transceiver_init.hh"
+#include "src/enums/webrtc/ice_connection_state.hh" // IWYU pragma: keep. Needed for conversions
+#include "src/enums/webrtc/ice_gathering_state.hh" // IWYU pragma: keep. Needed for conversions
+#include "src/enums/webrtc/media_type.hh" // IWYU pragma: keep. Needed for conversions.
+#include "src/enums/webrtc/peer_connection_state.hh" // IWYU pragma: keep. Needed for conversions.
+#include "src/enums/webrtc/signaling_state.hh" // IWYU pragma: keep. Needed for conversions.
+#include "src/functional/either.hh"
+#include "src/functional/maybe.hh"
+#include "src/interfaces/media_stream.hh"
+#include "src/interfaces/media_stream_track.hh"
+#include "src/interfaces/rtc_data_channel.hh"
+#include "src/interfaces/rtc_peer_connection/create_session_description_observer.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/interfaces/rtc_peer_connection/rtc_stats_collector.hh"
+#include "src/interfaces/rtc_peer_connection/set_session_description_observer.hh"
+#include "src/interfaces/rtc_rtp_receiver.hh"
+#include "src/interfaces/rtc_rtp_sender.hh"
+#include "src/interfaces/rtc_rtp_transceiver.hh"
+#include "src/interfaces/rtc_sctp_transport.hh"
+#include "src/node/error_factory.hh"
+#include "src/node/events.hh"
+#include "src/node/promise.hh"
+#include "src/node/utility.hh"
 
 namespace node_webrtc {
 

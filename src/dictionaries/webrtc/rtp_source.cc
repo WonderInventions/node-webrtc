@@ -1,12 +1,12 @@
-#include "src/dictionaries/webrtc/rtp_source.h"
+#include "src/dictionaries/webrtc/rtp_source.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/rtp_receiver_interface.h>
 
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/validation.h"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

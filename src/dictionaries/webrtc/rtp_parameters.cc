@@ -1,19 +1,19 @@
-#include "src/dictionaries/webrtc/rtp_parameters.h"
+#include "src/dictionaries/webrtc/rtp_parameters.hh"
 
 #include <webrtc/api/rtp_parameters.h>
 
-#include "src/converters/absl.h"
-#include "src/converters/object.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/webrtc/rtcp_parameters.h"
-#include "src/dictionaries/webrtc/rtp_codec_parameters.h"
-#include "src/dictionaries/webrtc/rtp_encoding_parameters.h"
-#include "src/dictionaries/webrtc/rtp_header_extension_parameters.h"
-#include "src/enums/webrtc/degradation_preference.h"
-#include "src/functional/curry.h"
-#include "src/functional/maybe.h"
-#include "src/functional/operators.h"
-#include "src/functional/validation.h"
+#include "src/converters/absl.hh"
+#include "src/converters/object.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/webrtc/rtcp_parameters.hh"
+#include "src/dictionaries/webrtc/rtp_codec_parameters.hh"
+#include "src/dictionaries/webrtc/rtp_encoding_parameters.hh"
+#include "src/dictionaries/webrtc/rtp_header_extension_parameters.hh"
+#include "src/enums/webrtc/degradation_preference.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/maybe.hh"
+#include "src/functional/operators.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/rtc_stats_member_interface.h"
+#include "src/dictionaries/webrtc/rtc_stats_member_interface.hh"
 
 #include <cstdint>
 #include <iosfwd>
@@ -9,7 +9,7 @@
 #include <node-addon-api/napi.h>
 #include <webrtc/api/stats/rtc_stats.h>
 
-#include "src/converters.h"
+#include "src/converters.hh"
 
 namespace node_webrtc {
 

@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/data_channel_init.h"
+#include "src/dictionaries/webrtc/data_channel_init.hh"
 
 #include <cstdint>
 #include <iosfwd>
@@ -6,9 +6,9 @@
 
 #include <webrtc/api/data_channel_interface.h>
 
-#include "src/enums/node_webrtc/rtc_priority_type.h"
-#include "src/functional/maybe.h"
-#include "src/functional/validation.h"
+#include "src/enums/node_webrtc/rtc_priority_type.hh"
+#include "src/functional/maybe.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -53,5 +53,5 @@ static Validation<webrtc::DataChannelInit> DATA_CHANNEL_INIT_FN(
 } // namespace node_webrtc
 
 #define DICT(X) DATA_CHANNEL_INIT##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

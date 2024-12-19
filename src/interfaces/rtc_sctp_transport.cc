@@ -5,13 +5,13 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_sctp_transport.h"
+#include "src/interfaces/rtc_sctp_transport.hh"
 
-#include "src/converters/absl.h"
-#include "src/converters/napi.h"
-#include "src/enums/webrtc/sctp_transport_state.h"
-#include "src/interfaces/rtc_dtls_transport.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
+#include "src/converters/absl.hh"
+#include "src/converters/napi.hh"
+#include "src/enums/webrtc/sctp_transport_state.hh"
+#include "src/interfaces/rtc_dtls_transport.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 
 namespace node_webrtc {
 

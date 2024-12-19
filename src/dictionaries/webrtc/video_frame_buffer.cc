@@ -1,9 +1,9 @@
-#include "src/dictionaries/webrtc/video_frame_buffer.h"
+#include "src/dictionaries/webrtc/video_frame_buffer.hh"
 
 #include <webrtc/api/video/i420_buffer.h>
 
-#include "src/dictionaries/node_webrtc/image_data.h"
-#include "src/functional/validation.h"
+#include "src/dictionaries/node_webrtc/image_data.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

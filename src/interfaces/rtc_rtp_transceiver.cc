@@ -5,21 +5,21 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_rtp_transceiver.h"
+#include "src/interfaces/rtc_rtp_transceiver.hh"
 
 #include <webrtc/api/rtp_transceiver_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 
-#include "src/converters/absl.h"
-#include "src/converters/arguments.h"
-#include "src/converters/interfaces.h"
-#include "src/dictionaries/webrtc/rtc_error.h"
-#include "src/dictionaries/webrtc/rtp_codec_capability.h"
-#include "src/dictionaries/webrtc/rtp_encoding_parameters.h"
-#include "src/enums/webrtc/rtp_transceiver_direction.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/interfaces/rtc_rtp_receiver.h"
-#include "src/interfaces/rtc_rtp_sender.h"
+#include "src/converters/absl.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/interfaces.hh"
+#include "src/dictionaries/webrtc/rtc_error.hh"
+#include "src/dictionaries/webrtc/rtp_codec_capability.hh"
+#include "src/dictionaries/webrtc/rtp_encoding_parameters.hh"
+#include "src/enums/webrtc/rtp_transceiver_direction.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/interfaces/rtc_rtp_receiver.hh"
+#include "src/interfaces/rtc_rtp_sender.hh"
 
 namespace node_webrtc {
 

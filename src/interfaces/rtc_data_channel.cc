@@ -5,7 +5,7 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_data_channel.h"
+#include "src/interfaces/rtc_data_channel.hh"
 
 #include <iostream>
 #include <utility>
@@ -14,11 +14,11 @@
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/rtc_base/copy_on_write_buffer.h>
 
-#include "src/enums/node_webrtc/binary_type.h"
-#include "src/enums/webrtc/data_state.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/node/error_factory.h"
-#include "src/node/events.h"
+#include "src/enums/node_webrtc/binary_type.hh"
+#include "src/enums/webrtc/data_state.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/node/error_factory.hh"
+#include "src/node/events.hh"
 
 namespace node_webrtc {
 

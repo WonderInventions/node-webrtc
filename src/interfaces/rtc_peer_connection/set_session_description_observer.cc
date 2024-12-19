@@ -5,16 +5,16 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_peer_connection/set_session_description_observer.h"
+#include "src/interfaces/rtc_peer_connection/set_session_description_observer.hh"
 
 #include <webrtc/api/rtc_error.h>
 
-#include "src/converters.h"
-#include "src/converters/napi.h"
-#include "src/converters/undefined.h"
-#include "src/dictionaries/node_webrtc/some_error.h"
-#include "src/functional/either.h"
-#include "src/node/error_factory.h"
+#include "src/converters.hh"
+#include "src/converters/napi.hh"
+#include "src/converters/undefined.hh"
+#include "src/dictionaries/node_webrtc/some_error.hh"
+#include "src/functional/either.hh"
+#include "src/node/error_factory.hh"
 
 void node_webrtc::SetSessionDescriptionObserver::OnSuccess() {
   Resolve(node_webrtc::Undefined());

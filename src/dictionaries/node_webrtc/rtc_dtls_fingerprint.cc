@@ -1,6 +1,6 @@
-#include "src/dictionaries/node_webrtc/rtc_dtls_fingerprint.h"
+#include "src/dictionaries/node_webrtc/rtc_dtls_fingerprint.hh"
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -17,5 +17,5 @@ RTC_DTLS_FINGERPRINT_FN(const Maybe<std::string> &algorithm,
 } // namespace node_webrtc
 
 #define DICT(X) RTC_DTLS_FINGERPRINT##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

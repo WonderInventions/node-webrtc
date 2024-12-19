@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/ice_server.h"
+#include "src/dictionaries/webrtc/ice_server.hh"
 
 #include <iosfwd>
 #include <string>
@@ -8,12 +8,12 @@
 #include <node-addon-api/napi.h>
 #include <webrtc/api/peer_connection_interface.h>
 
-#include "src/converters/napi.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/node_webrtc/rtc_outh_credential.h"
-#include "src/enums/node_webrtc/rtc_ice_credential_type.h"
-#include "src/functional/either.h"
-#include "src/functional/validation.h"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/node_webrtc/rtc_outh_credential.hh"
+#include "src/enums/node_webrtc/rtc_ice_credential_type.hh"
+#include "src/functional/either.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -76,5 +76,5 @@ TO_NAPI_IMPL(webrtc::PeerConnectionInterface::IceServer, pair) {
 } // namespace node_webrtc
 
 #define DICT(X) ICE_SERVER##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

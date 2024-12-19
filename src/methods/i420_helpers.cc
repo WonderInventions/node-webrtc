@@ -5,14 +5,14 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/methods/i420_helpers.h"
+#include "src/methods/i420_helpers.hh"
 
 #include <libyuv.h>
 
-#include "src/converters.h"
-#include "src/converters/arguments.h"
-#include "src/converters/napi.h"
-#include "src/dictionaries/node_webrtc/image_data.h"
+#include "src/converters.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/node_webrtc/image_data.hh"
 
 namespace node_webrtc {
 

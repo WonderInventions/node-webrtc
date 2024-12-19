@@ -1,7 +1,7 @@
-#include "src/dictionaries/node_webrtc/rtc_video_source_init.h"
+#include "src/dictionaries/node_webrtc/rtc_video_source_init.hh"
 
-#include "src/functional/maybe.h"
-#include "src/functional/validation.h"
+#include "src/functional/maybe.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -16,5 +16,5 @@ RTC_VIDEO_SOURCE_INIT_FN(const bool isScreencast,
 } // namespace node_webrtc
 
 #define DICT(X) RTC_VIDEO_SOURCE_INIT##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

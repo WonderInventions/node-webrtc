@@ -1,14 +1,14 @@
-#include "src/dictionaries/node_webrtc/extended_rtc_configuration.h"
+#include "src/dictionaries/node_webrtc/extended_rtc_configuration.hh"
 
-#include "src/converters/object.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/webrtc/ice_server.h"
-#include "src/dictionaries/webrtc/rtc_configuration.h"
-#include "src/enums/webrtc/bundle_policy.h"
-#include "src/enums/webrtc/ice_transports_type.h"
-#include "src/enums/webrtc/rtcp_mux_policy.h"
-#include "src/enums/webrtc/sdp_semantics.h"
-#include "src/functional/curry.h"
+#include "src/converters/object.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/webrtc/ice_server.hh"
+#include "src/dictionaries/webrtc/rtc_configuration.hh"
+#include "src/enums/webrtc/bundle_policy.hh"
+#include "src/enums/webrtc/ice_transports_type.hh"
+#include "src/enums/webrtc/rtcp_mux_policy.hh"
+#include "src/enums/webrtc/sdp_semantics.hh"
+#include "src/functional/curry.hh"
 
 namespace node_webrtc {
 

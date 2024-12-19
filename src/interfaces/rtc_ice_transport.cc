@@ -5,14 +5,14 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_ice_transport.h"
+#include "src/interfaces/rtc_ice_transport.hh"
 
-#include "src/converters/arguments.h"
-#include "src/enums/webrtc/ice_connection_state.h"
-#include "src/enums/webrtc/ice_gathering_state.h"
-#include "src/enums/webrtc/ice_role.h"
-#include "src/enums/webrtc/ice_transport_state.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
+#include "src/converters/arguments.hh"
+#include "src/enums/webrtc/ice_connection_state.hh"
+#include "src/enums/webrtc/ice_gathering_state.hh"
+#include "src/enums/webrtc/ice_role.hh"
+#include "src/enums/webrtc/ice_transport_state.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 
 namespace node_webrtc {
 

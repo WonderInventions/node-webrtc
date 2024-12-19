@@ -1,10 +1,10 @@
-#include "src/dictionaries/node_webrtc/media_track_settings.h"
+#include "src/dictionaries/node_webrtc/media_track_settings.hh"
 
 #include <node-addon-api/napi.h>
 
-#include "src/converters/object.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/validation.h"
+#include "src/converters/object.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -95,9 +95,9 @@ TO_NAPI_IMPL(VIDEO_MEDIA_TRACK_SETTINGS, pair) {
 } // namespace node_webrtc
 
 #define DICT(X) AUDIO_MEDIA_TRACK_SETTINGS##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT
 
 #define DICT(X) VIDEO_MEDIA_TRACK_SETTINGS##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

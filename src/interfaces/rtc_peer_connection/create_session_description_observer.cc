@@ -5,14 +5,14 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_peer_connection/create_session_description_observer.h"
+#include "src/interfaces/rtc_peer_connection/create_session_description_observer.hh"
 
 #include <type_traits>
 
 #include <webrtc/api/rtc_error.h>
 
-#include "src/converters/napi.h"
-#include "src/dictionaries/node_webrtc/some_error.h"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/node_webrtc/some_error.hh"
 
 void node_webrtc::CreateSessionDescriptionObserver::OnSuccess(
     webrtc::SessionDescriptionInterface *description) {

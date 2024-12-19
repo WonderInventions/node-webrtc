@@ -7,7 +7,7 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#include "src/webrtc/test_audio_device_module.h"
+#include "src/webrtc/test_audio_device_module.hh"
 
 #include <algorithm>
 #include <cstdlib>

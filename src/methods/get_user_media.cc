@@ -5,26 +5,26 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/methods/get_user_media.h"
+#include "src/methods/get_user_media.hh"
 
 #include <webrtc/api/audio_options.h>
 #include <webrtc/api/peer_connection_interface.h>
 
-#include "src/converters.h"
-#include "src/converters/arguments.h"
-#include "src/converters/interfaces.h"
-#include "src/converters/napi.h"
-#include "src/converters/object.h"
-#include "src/functional/curry.h"
-#include "src/functional/either.h"
-#include "src/functional/maybe.h"
-#include "src/functional/operators.h"
-#include "src/functional/validation.h"
-#include "src/interfaces/media_stream.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/interfaces/rtc_video_source.h"
-#include "src/node/events.h"
-#include "src/node/utility.h"
+#include "src/converters.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/interfaces.hh"
+#include "src/converters/napi.hh"
+#include "src/converters/object.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/either.hh"
+#include "src/functional/maybe.hh"
+#include "src/functional/operators.hh"
+#include "src/functional/validation.hh"
+#include "src/interfaces/media_stream.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/interfaces/rtc_video_source.hh"
+#include "src/node/events.hh"
+#include "src/node/utility.hh"
 
 // TODO(mroberts): Expand support for other members.
 struct MediaTrackConstraintSet {

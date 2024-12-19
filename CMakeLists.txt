@@ -304,7 +304,7 @@ set(catch2_install_dir ${SOURCE_DIR})
 # node-webrtc
 # -----------------------------------------------------------------------------
 
-file(GLOB_RECURSE MODULE_SRC src/*.cc src/*.h)
+file(GLOB_RECURSE MODULE_SRC src/*.cc src/*.hh)
 add_library(${MODULE} SHARED ${MODULE_SRC} ${CMAKE_JS_SRC})
 set_target_properties(${MODULE} PROPERTIES PREFIX "" SUFFIX ".node")
 

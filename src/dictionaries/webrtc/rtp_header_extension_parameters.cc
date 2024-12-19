@@ -1,15 +1,15 @@
-#include "src/dictionaries/webrtc/rtp_header_extension_parameters.h"
+#include "src/dictionaries/webrtc/rtp_header_extension_parameters.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/rtp_parameters.h>
 
-#include "src/converters/object.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/curry.h"
-#include "src/functional/operators.h"
-#include "src/functional/validation.h"
+#include "src/converters/object.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/operators.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

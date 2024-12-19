@@ -1,8 +1,8 @@
-#include "src/converters/null.h"
+#include "src/converters/null.hh"
 
 #include <node-addon-api/napi.h>
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

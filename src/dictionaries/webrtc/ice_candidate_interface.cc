@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/ice_candidate_interface.h"
+#include "src/dictionaries/webrtc/ice_candidate_interface.hh"
 
 #include <iosfwd>
 #include <utility>
@@ -8,12 +8,12 @@
 #include <webrtc/api/jsep.h>
 #include <webrtc/p2p/base/port.h>
 
-#include "src/converters.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/enums/node_webrtc/rtc_ice_candidate_type.h"
-#include "src/enums/node_webrtc/rtc_ice_component.h"
-#include "src/functional/maybe.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
+#include "src/converters.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/enums/node_webrtc/rtc_ice_candidate_type.hh"
+#include "src/enums/node_webrtc/rtc_ice_component.hh"
+#include "src/functional/maybe.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -138,5 +138,5 @@ TO_NAPI_IMPL(webrtc::IceCandidateInterface *,
 } // namespace node_webrtc
 
 #define DICT(X) ICE_CANDIDATE_INTERFACE##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

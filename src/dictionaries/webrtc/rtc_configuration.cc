@@ -1,16 +1,16 @@
 // Needed for std::getenv on Windows
 #define _CRT_SECURE_NO_WARNINGS // NOLINT(bugprone-reserved-identifier)
-#include "src/dictionaries/webrtc/rtc_configuration.h"
+#include "src/dictionaries/webrtc/rtc_configuration.hh"
 
-#include "src/converters.h"
-#include "src/converters/object.h"
-#include "src/dictionaries/webrtc/ice_server.h"
-#include "src/enums/webrtc/bundle_policy.h"
-#include "src/enums/webrtc/ice_transports_type.h"
-#include "src/enums/webrtc/rtcp_mux_policy.h"
-#include "src/enums/webrtc/sdp_semantics.h"
-#include "src/functional/curry.h"
-#include "src/functional/operators.h"
+#include "src/converters.hh"
+#include "src/converters/object.hh"
+#include "src/dictionaries/webrtc/ice_server.hh"
+#include "src/enums/webrtc/bundle_policy.hh"
+#include "src/enums/webrtc/ice_transports_type.hh"
+#include "src/enums/webrtc/rtcp_mux_policy.hh"
+#include "src/enums/webrtc/sdp_semantics.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/operators.hh"
 
 namespace node_webrtc {
 

@@ -1,6 +1,6 @@
-#include "src/converters/napi.h"
+#include "src/converters/napi.hh"
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

@@ -1,7 +1,7 @@
-#include "src/dictionaries/node_webrtc/rtc_offer_options.h"
+#include "src/dictionaries/node_webrtc/rtc_offer_options.hh"
 
-#include "src/functional/maybe.h"
-#include "src/functional/validation.h"
+#include "src/functional/maybe.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -38,5 +38,5 @@ RTC_OFFER_OPTIONS_FN(const bool voiceActivityDetection, const bool iceRestart,
 } // namespace node_webrtc
 
 #define DICT(X) RTC_OFFER_OPTIONS##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

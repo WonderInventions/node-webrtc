@@ -5,20 +5,20 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_video_sink.h"
+#include "src/interfaces/rtc_video_sink.hh"
 
 #include <type_traits>
 #include <utility>
 
 #include <webrtc/api/video/video_source_interface.h>
 
-#include "src/converters.h"
-#include "src/converters/arguments.h"
-#include "src/converters/napi.h"
-#include "src/dictionaries/webrtc/video_frame.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
-#include "src/interfaces/media_stream_track.h" // IWYU pragma: keep
-#include "src/node/events.h"
+#include "src/converters.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/webrtc/video_frame.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
+#include "src/interfaces/media_stream_track.hh" // IWYU pragma: keep
+#include "src/node/events.hh"
 
 namespace node_webrtc {
 

@@ -5,17 +5,17 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/media_stream_track.h"
+#include "src/interfaces/media_stream_track.hh"
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/media_stream_interface.h>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/rtc_base/helpers.h>
 
-#include "src/converters.h"
-#include "src/converters/interfaces.h"
-#include "src/dictionaries/node_webrtc/media_track_settings.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
+#include "src/converters.hh"
+#include "src/converters/interfaces.hh"
+#include "src/dictionaries/node_webrtc/media_track_settings.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 
 namespace node_webrtc {
 

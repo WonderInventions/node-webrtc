@@ -1,13 +1,13 @@
-#include "src/dictionaries/node_webrtc/image_data.h"
+#include "src/dictionaries/node_webrtc/image_data.hh"
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/video/i420_buffer.h>
 
-#include "src/converters.h"
-#include "src/converters/object.h"
-#include "src/dictionaries/webrtc/video_frame_buffer.h"
-#include "src/functional/curry.h"
-#include "src/functional/operators.h"
+#include "src/converters.hh"
+#include "src/converters/object.hh"
+#include "src/dictionaries/webrtc/video_frame_buffer.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/operators.hh"
 
 namespace node_webrtc {
 

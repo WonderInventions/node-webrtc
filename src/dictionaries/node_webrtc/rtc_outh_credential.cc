@@ -1,6 +1,6 @@
-#include "src/dictionaries/node_webrtc/rtc_outh_credential.h"
+#include "src/dictionaries/node_webrtc/rtc_outh_credential.hh"
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -15,5 +15,5 @@ RTC_OAUTH_CREDENTIAL_FN(const std::string &macKey,
 } // namespace node_webrtc
 
 #define DICT(X) RTC_OAUTH_CREDENTIAL##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

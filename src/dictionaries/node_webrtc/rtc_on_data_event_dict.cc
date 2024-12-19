@@ -1,12 +1,12 @@
-#include "src/dictionaries/node_webrtc/rtc_on_data_event_dict.h"
+#include "src/dictionaries/node_webrtc/rtc_on_data_event_dict.hh"
 
 #include <node-addon-api/napi.h>
 
-#include "src/converters/object.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/curry.h"
-#include "src/functional/operators.h"
-#include "src/functional/validation.h"
+#include "src/converters/object.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/operators.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

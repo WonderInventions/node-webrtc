@@ -1,14 +1,14 @@
-#include "src/dictionaries/node_webrtc/rtc_session_description_init.h"
+#include "src/dictionaries/node_webrtc/rtc_session_description_init.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/jsep.h>
 
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/curry.h"
-#include "src/functional/operators.h"
-#include "src/functional/validation.h"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/curry.hh"
+#include "src/functional/operators.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -92,5 +92,5 @@ TO_NAPI_IMPL(const webrtc::SessionDescriptionInterface *, pair) {
 } // namespace node_webrtc
 
 #define DICT(X) RTC_SESSION_DESCRIPTION_INIT##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

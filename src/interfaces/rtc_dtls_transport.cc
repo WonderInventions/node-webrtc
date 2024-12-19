@@ -5,7 +5,7 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_dtls_transport.h"
+#include "src/interfaces/rtc_dtls_transport.hh"
 
 #include <memory>
 #include <type_traits>
@@ -17,15 +17,15 @@
 #include <webrtc/rtc_base/location.h>
 #include <webrtc/rtc_base/thread.h>
 
-#include "src/converters.h"
-#include "src/converters/napi.h"
-#include "src/converters/webrtc.h"
-#include "src/dictionaries/node_webrtc/some_error.h"
-#include "src/enums/webrtc/dtls_transport_state.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
-#include "src/interfaces/rtc_ice_transport.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/node/events.h"
+#include "src/converters.hh"
+#include "src/converters/napi.hh"
+#include "src/converters/webrtc.hh"
+#include "src/dictionaries/node_webrtc/some_error.hh"
+#include "src/enums/webrtc/dtls_transport_state.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
+#include "src/interfaces/rtc_ice_transport.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/node/events.hh"
 
 namespace node_webrtc {
 

@@ -5,13 +5,13 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "error_factory.h"
+#include "error_factory.hh"
 
 #include <string>
 
-#include "src/converters.h"
-#include "src/converters/napi.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
+#include "src/converters.hh"
+#include "src/converters/napi.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
 
 Napi::FunctionReference &node_webrtc::ErrorFactory::GetDOMException() {
   static Napi::FunctionReference func;

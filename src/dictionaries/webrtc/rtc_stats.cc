@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/rtc_stats.h"
+#include "src/dictionaries/webrtc/rtc_stats.hh"
 
 #include <iosfwd>
 #include <string>
@@ -8,9 +8,9 @@
 #include <node-addon-api/napi.h>
 #include <webrtc/api/stats/rtc_stats.h>
 
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/webrtc/rtc_stats_member_interface.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/webrtc/rtc_stats_member_interface.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

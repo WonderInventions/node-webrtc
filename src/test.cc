@@ -7,13 +7,13 @@
  */
 #if DEBUG && defined(__x86_64__)
 
-#include "src/test.h"
+#include "src/test.hh"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch.hpp>
 
-#include "src/converters.h"
-#include "src/converters/napi.h"
+#include "src/converters.hh"
+#include "src/converters/napi.hh"
 
 TEST_CASE("converting booleans", "[converting-booleans]") {
   auto env = *node_webrtc::Test::env;

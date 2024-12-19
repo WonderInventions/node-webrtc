@@ -1,13 +1,13 @@
-#include "src/dictionaries/webrtc/video_frame.h"
+#include "src/dictionaries/webrtc/video_frame.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/video/video_frame.h>
 
-#include "src/dictionaries/macros/napi.h"
-#include "src/dictionaries/webrtc/video_frame_buffer.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/dictionaries/webrtc/video_frame_buffer.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

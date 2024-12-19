@@ -5,15 +5,15 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_audio_source.h"
+#include "src/interfaces/rtc_audio_source.hh"
 
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/rtc_base/ref_counted_object.h>
 
-#include "src/converters.h"
-#include "src/converters/arguments.h"
-#include "src/functional/maybe.h"
-#include "src/interfaces/media_stream_track.h"
+#include "src/converters.hh"
+#include "src/converters/arguments.hh"
+#include "src/functional/maybe.hh"
+#include "src/interfaces/media_stream_track.hh"
 
 namespace node_webrtc {
 

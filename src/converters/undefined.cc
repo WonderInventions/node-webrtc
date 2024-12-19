@@ -1,10 +1,10 @@
-#include "src/converters/undefined.h"
+#include "src/converters/undefined.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

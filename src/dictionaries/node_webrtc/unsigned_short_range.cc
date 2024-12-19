@@ -1,13 +1,13 @@
-#include "src/dictionaries/node_webrtc/unsigned_short_range.h"
+#include "src/dictionaries/node_webrtc/unsigned_short_range.hh"
 
 #include <utility>
 
 #include <node-addon-api/napi.h>
 
-#include "src/converters/napi.h"
-#include "src/dictionaries/macros/napi.h"
-#include "src/functional/maybe.h"
-#include "src/functional/validation.h"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/macros/napi.hh"
+#include "src/functional/maybe.hh"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -47,5 +47,5 @@ TO_NAPI_IMPL(UNSIGNED_SHORT_RANGE, pair) {
 } // namespace node_webrtc
 
 #define DICT(X) UNSIGNED_SHORT_RANGE##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

@@ -5,20 +5,20 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_video_source.h"
+#include "src/interfaces/rtc_video_source.hh"
 
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/video/i420_buffer.h>
 #include <webrtc/api/video/video_frame.h>
 #include <webrtc/rtc_base/ref_counted_object.h>
 
-#include "src/converters.h"
-#include "src/converters/absl.h"
-#include "src/converters/arguments.h"
-#include "src/converters/napi.h"
-#include "src/dictionaries/webrtc/video_frame_buffer.h"
-#include "src/functional/maybe.h"
-#include "src/interfaces/media_stream_track.h"
+#include "src/converters.hh"
+#include "src/converters/absl.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/webrtc/video_frame_buffer.hh"
+#include "src/functional/maybe.hh"
+#include "src/interfaces/media_stream_track.hh"
 
 #include <chrono>
 #include <ctime>

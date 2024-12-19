@@ -1,4 +1,4 @@
-#include "src/node/deferrer.h"
+#include "src/node/deferrer.hh"
 
 #include <node_api.h>
 

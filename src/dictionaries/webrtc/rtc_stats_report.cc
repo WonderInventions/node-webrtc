@@ -1,12 +1,12 @@
-#include "src/dictionaries/webrtc/rtc_stats_report.h"
+#include "src/dictionaries/webrtc/rtc_stats_report.hh"
 
 #include <node-addon-api/napi.h>
 #include <webrtc/api/scoped_refptr.h>          // IWYU pragma: keep
 #include <webrtc/api/stats/rtc_stats_report.h> // IWYU pragma: keep
 
-#include "src/converters/object.h"
-#include "src/dictionaries/webrtc/rtc_stats.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
+#include "src/converters/object.hh"
+#include "src/dictionaries/webrtc/rtc_stats.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 

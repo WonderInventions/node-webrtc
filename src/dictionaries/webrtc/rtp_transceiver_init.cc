@@ -1,4 +1,4 @@
-#include "src/dictionaries/webrtc/rtp_transceiver_init.h"
+#include "src/dictionaries/webrtc/rtp_transceiver_init.hh"
 
 #include <iosfwd>
 #include <vector>
@@ -8,10 +8,10 @@
 #include <webrtc/api/rtp_transceiver_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 
-#include "src/dictionaries/webrtc/rtp_encoding_parameters.h" // IWYU pragma: keep
-#include "src/enums/webrtc/rtp_transceiver_direction.h" // IWYU pragma: keep
-#include "src/functional/validation.h"
-#include "src/interfaces/media_stream.h"
+#include "src/dictionaries/webrtc/rtp_encoding_parameters.hh" // IWYU pragma: keep
+#include "src/enums/webrtc/rtp_transceiver_direction.hh" // IWYU pragma: keep
+#include "src/functional/validation.hh"
+#include "src/interfaces/media_stream.hh"
 
 namespace node_webrtc {
 
@@ -43,5 +43,5 @@ static Validation<webrtc::RtpTransceiverInit> RTP_TRANSCEIVER_INIT_FN(
 } // namespace node_webrtc
 
 #define DICT(X) RTP_TRANSCEIVER_INIT##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT

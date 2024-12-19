@@ -5,22 +5,22 @@
  * project authors may be found in the AUTHORS file in the root of the source
  * tree.
  */
-#include "src/interfaces/rtc_rtp_receiver.h"
+#include "src/interfaces/rtc_rtp_receiver.hh"
 
 #include <webrtc/api/rtp_receiver_interface.h>
 
-#include "src/converters.h"
-#include "src/converters/arguments.h"
-#include "src/converters/interfaces.h"
-#include "src/converters/napi.h"
-#include "src/dictionaries/webrtc/rtp_capabilities.h"
-#include "src/dictionaries/webrtc/rtp_parameters.h"
-#include "src/dictionaries/webrtc/rtp_source.h"
-#include "src/enums/webrtc/media_type.h"
-#include "src/interfaces/media_stream_track.h"
-#include "src/interfaces/rtc_dtls_transport.h"
-#include "src/interfaces/rtc_peer_connection/peer_connection_factory.h"
-#include "src/node/utility.h"
+#include "src/converters.hh"
+#include "src/converters/arguments.hh"
+#include "src/converters/interfaces.hh"
+#include "src/converters/napi.hh"
+#include "src/dictionaries/webrtc/rtp_capabilities.hh"
+#include "src/dictionaries/webrtc/rtp_parameters.hh"
+#include "src/dictionaries/webrtc/rtp_source.hh"
+#include "src/enums/webrtc/media_type.hh"
+#include "src/interfaces/media_stream_track.hh"
+#include "src/interfaces/rtc_dtls_transport.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/node/utility.hh"
 
 namespace node_webrtc {
 

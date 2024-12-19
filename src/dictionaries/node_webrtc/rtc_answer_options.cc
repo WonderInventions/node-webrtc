@@ -1,6 +1,6 @@
-#include "src/dictionaries/node_webrtc/rtc_answer_options.h"
+#include "src/dictionaries/node_webrtc/rtc_answer_options.hh"
 
-#include "src/functional/validation.h"
+#include "src/functional/validation.hh"
 
 namespace node_webrtc {
 
@@ -16,5 +16,5 @@ RTC_ANSWER_OPTIONS_FN(const bool voiceActivityDetection) {
 } // namespace node_webrtc
 
 #define DICT(X) RTC_ANSWER_OPTIONS##X
-#include "src/dictionaries/macros/impls.h"
+#include "src/dictionaries/macros/impls.hh"
 #undef DICT
