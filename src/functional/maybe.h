@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <functional>
+#include <optional>
 #include <type_traits>
 
 namespace node_webrtc {
@@ -28,13 +29,13 @@ public:
   /**
    * Construct an empty Maybe.
    */
-  Maybe() : _is_just(false), _value(T()) {}
+  Maybe() : _value(std::nullopt) {}
 
   /**
    * Construct a non-empty Maybe.
    * @param value the value to inject into the Maybe
    */
-  explicit Maybe(const T &value) : _is_just(true), _value(value) {}
+  explicit Maybe(const T &value) : _value(value) {}
 
   /**
    * Maybe forms an applicative. Apply a Maybe.
@@ -43,11 +44,11 @@ public:
    * @return the result of applying the Maybe
    */
   template <typename F>
-  Maybe<typename std::result_of<F(T)>::type> Apply(const Maybe<F> f) const {
-    return f.IsJust() && _is_just
-               ? Maybe<typename std::result_of<F(T)>::type>::Just(
-                     f.UnsafeFromJust()(_value))
-               : Maybe<typename std::result_of<F(T)>::type>::Nothing();
+  Maybe<typename std::invoke_result_t<F, T>> Apply(const Maybe<F> f) const {
+    return f.IsJust() && _value.has_value()
+               ? Maybe<typename std::invoke_result_t<F, T>>::Just(
+                     f.UnsafeFromJust()(_value.value()))
+               : Maybe<typename std::invoke_result_t<F, T>>::Nothing();
   }
 
   /**
@@ -57,7 +58,7 @@ public:
    * @return a Maybe of S
    */
   template <typename S> Maybe<S> FlatMap(std::function<Maybe<S>(T)> f) const {
-    return _is_just ? f(_value) : Maybe<S>::Nothing();
+    return _value.has_value() ? f(_value.value()) : Maybe<S>::Nothing();
   }
 
   /**
@@ -67,20 +68,20 @@ public:
    * @return the value in the Maybe, if non-empty; otherwise, the default value
    */
   T FromMaybe(T default_value) const {
-    return _is_just ? _value : default_value;
+    return _value.has_value() ? _value.value() : default_value;
   }
 
   /**
    * Check whether or not the Maybe is non-empty.
    * @return true if the Maybe is non-empty; otherwise, false
    */
-  bool IsJust() const { return _is_just; }
+  [[nodiscard]] bool IsJust() const { return _value.has_value(); }
 
   /**
    * Check whether or not the Maybe is empty.
    * @return true if the Maybe is empty; otherwise, false
    */
-  bool IsNothing() const { return !_is_just; }
+  [[nodiscard]] bool IsNothing() const { return !_value.has_value(); }
 
   /**
    * Maybe forms a functor. Map a function over Maybe.
@@ -89,10 +90,11 @@ public:
    * @return the mapped Maybe
    */
   template <typename F>
-  Maybe<typename std::result_of<F(T)>::type> Map(F f) const {
-    return _is_just
-               ? Maybe<typename std::result_of<F(T)>::type>::Just(f(_value))
-               : Maybe<typename std::result_of<F(T)>::type>::Nothing();
+  Maybe<typename std::invoke_result_t<F, T>> Map(F f) const {
+    return _value.has_value()
+               ? Maybe<typename std::invoke_result_t<F, T>>::Just(
+                     f(_value.value()))
+               : Maybe<typename std::invoke_result_t<F, T>>::Nothing();
   }
 
   /**
@@ -101,7 +103,9 @@ public:
    * @param that another Maybe
    * @return this or that
    */
-  Maybe<T> Or(const Maybe<T> &that) const { return _is_just ? this : that; }
+  Maybe<T> Or(const Maybe<T> &that) const {
+    return _value.has_value() ? this : that;
+  }
 
   /**
    * If "this" contains a value, return it; otherwise, compute a value and
@@ -110,7 +114,7 @@ public:
    * @return
    */
   T Or(std::function<T()> compute) const {
-    return _is_just ? _value : compute();
+    return _value.has_value() ? _value.value() : compute();
   }
 
   /**
@@ -118,8 +122,8 @@ public:
    * @return the value in the Maybe, if non-empty; otherwise, undefined
    */
   T UnsafeFromJust() const {
-    assert(_is_just);
-    return _value;
+    assert(_value.has_value());
+    return *_value;
   }
 
   /**
@@ -136,8 +140,7 @@ public:
   static Maybe<T> Just(const T &value) { return Maybe(value); }
 
 private:
-  bool _is_just;
-  T _value;
+  std::optional<T> _value;
 };
 
 template <typename T> static Maybe<T> MakeJust(const T &t) {
