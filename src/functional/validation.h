@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <functional>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -22,9 +23,9 @@
 
 namespace node_webrtc {
 
-typedef std::string Error;
+using Error = std::string;
 
-typedef std::vector<Error> Errors;
+using Errors = std::vector<Error>;
 
 /**
  * A Validation is similar to Either, in that it is a sum type whose "left"
@@ -35,22 +36,14 @@ typedef std::vector<Error> Errors;
  */
 template <typename T> class Validation {
 public:
-  // TODO(mroberts): This is no good.
-  Validation() : _is_valid(false), _value(T()) {}
-
   /**
    * Construct a valid Validation. The value passed is assumed to be valid.
    * @param value the value to inject into the Validation
    */
-  explicit Validation(const T &value) : _is_valid(true), _value(value) {}
+  explicit Validation(const T &value) : _value(value) {}
 
   bool operator==(const Validation<T> &that) const {
-    if (!_is_valid && !that._is_valid) {
-      return true;
-    } else if (_is_valid && that._is_valid) {
-      return _value == that._value;
-    }
-    return false;
+    return _value == that._value;
   }
 
   /**
@@ -60,17 +53,18 @@ public:
    * @return the result of applying the Validation
    */
   template <typename F>
-  Validation<typename std::result_of<F(T)>::type>
+  Validation<typename std::invoke_result_t<F, T>>
   Apply(const Validation<F> &f) const {
     if (f.IsInvalid()) {
       auto errors = f.ToErrors();
       errors.insert(errors.end(), _errors.begin(), _errors.end());
-      return Validation<typename std::result_of<F(T)>::type>::Invalid(errors);
-    } else if (IsInvalid()) {
-      return Validation<typename std::result_of<F(T)>::type>::Invalid(_errors);
+      return Validation<typename std::invoke_result_t<F, T>>::Invalid(errors);
     }
-    return Validation<typename std::result_of<F(T)>::type>::Valid(
-        f.UnsafeFromValid()(_value));
+    if (IsInvalid()) {
+      return Validation<typename std::invoke_result_t<F, T>>::Invalid(_errors);
+    }
+    return Validation<typename std::invoke_result_t<F, T>>::Valid(
+        f.UnsafeFromValid()(_value.value()));
   }
 
   /**
@@ -82,10 +76,10 @@ public:
    */
   template <typename S>
   Validation<S> FlatMap(std::function<Validation<S>(T)> f) const {
-    if (!_is_valid) {
+    if (!_value.has_value()) {
       return Validation<S>::Invalid(_errors);
     }
-    return f(_value);
+    return f(_value.value());
   }
 
   /**
@@ -95,7 +89,7 @@ public:
    * @return the value in the Validation, if valid; otherwise, the default value
    */
   T FromValidation(const T &default_value) const {
-    return _is_valid ? _value : default_value;
+    return _value.has_value() ? _value.value() : default_value;
   }
 
   /**
@@ -106,20 +100,20 @@ public:
    * value
    */
   T FromValidation(std::function<T(Errors)> f) const {
-    return _is_valid ? _value : f(_errors);
+    return _value.has_value() ? _value.value() : f(_errors);
   }
 
   /**
    * Check whether or not the Validation is invalid.
    * @return true if the Validation is invalid; otherwise, false
    */
-  bool IsInvalid() const { return !_is_valid; }
+  [[nodiscard]] bool IsInvalid() const { return !_value.has_value(); }
 
   /**
    * Check whether or not the Validation is valid.
    * @return true if the Validation is valid; otherwise, false
    */
-  bool IsValid() const { return _is_valid; }
+  [[nodiscard]] bool IsValid() const { return _value.has_value(); }
 
   /**
    * Validation forms a functor. Map a function over Validation.
@@ -128,11 +122,12 @@ public:
    * @return the mapped Validation
    */
   template <typename F>
-  Validation<typename std::result_of<F(T)>::type> Map(F f) const {
-    return _is_valid ? Validation<typename std::result_of<F(T)>::type>::Valid(
-                           f(_value))
-                     : Validation<typename std::result_of<F(T)>::type>::Invalid(
-                           _errors);
+  Validation<typename std::invoke_result_t<F, T>> Map(F f) const {
+    return _value.has_value()
+               ? Validation<typename std::invoke_result_t<F, T>>::Valid(
+                     f(_value.value()))
+               : Validation<typename std::invoke_result_t<F, T>>::Invalid(
+                     _errors);
   }
 
   /**
@@ -142,14 +137,14 @@ public:
    * @return this or that
    */
   Validation<T> Or(const Validation<T> &that) const {
-    return _is_valid ? Validation<T>::Valid(_value) : that;
+    return _value.has_value() ? Validation<T>::Valid(_value.value()) : that;
   }
 
   /**
    * Get the errors in a Validation.
    * @return errors
    */
-  Errors ToErrors() const { return std::vector<Error>(_errors); }
+  [[nodiscard]] Errors ToErrors() const { return std::vector<Error>(_errors); }
 
   /**
    * Unsafely eliminate a Validation. This only works if the Validation is
@@ -157,8 +152,8 @@ public:
    * @return the value in the Validation, if valid; otherwise, undefined
    */
   T UnsafeFromValid() const {
-    assert(_is_valid);
-    return _value;
+    assert(_value.has_value());
+    return *_value;
   }
 
   /**
@@ -217,12 +212,12 @@ public:
   static Validation<T> Valid(const T &value) { return Validation(value); }
 
 private:
-  Validation(const bool is_valid, const Errors &errors)
-      : _errors(errors), _is_valid(is_valid), _value(T()) {}
+  Validation(bool /*false, needed to resolve ambiguous overloads */,
+             Errors errors)
+      : _errors(std::move(errors)), _value(std::nullopt) {}
 
   Errors _errors;
-  bool _is_valid;
-  T _value;
+  std::optional<T> _value;
 };
 
 template <typename T> Validation<T> Pure(const T &value) {
