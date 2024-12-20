@@ -2,7 +2,7 @@
 
 namespace node_webrtc {
 
-AsyncContextReleaser *AsyncContextReleaser::_default = nullptr;
+AsyncContextReleaser *AsyncContextReleaser::_default = nullptr; // NOLINT
 
 Napi::FunctionReference &AsyncContextReleaser::constructor() {
   static Napi::FunctionReference constructor;

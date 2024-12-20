@@ -75,23 +75,18 @@ test("Destructors fire in RTCDataChannel use-case", async (t) => {
       destructor(pc2._pc),
       destructor(dc1),
       destructor(dc2),
-      // destructor(pc1.sctp),
-      // destructor(pc2.sctp),
-      // destructor(pc1.sctp.transport),
-      // destructor(pc2.sctp.transport),
-      // destructor(pc1.sctp.transport.iceTransport),
-      // destructor(pc2.sctp.transport.iceTransport),
+      destructor(pc1.sctp),
+      destructor(pc2.sctp),
+      destructor(pc1.sctp.transport),
+      destructor(pc2.sctp.transport),
+      destructor(pc1.sctp.transport.iceTransport),
+      destructor(pc2.sctp.transport.iceTransport),
     ];
-
-    const annotatedDestructors = destructors.map(async (p, i) => {
-      await p;
-      console.log(`destructor ${i} ran`);
-    });
 
     pc1.close();
     pc2.close();
 
-    return Promise.all(annotatedDestructors);
+    return Promise.all(destructors);
   })();
 
   stop();
@@ -99,6 +94,7 @@ test("Destructors fire in RTCDataChannel use-case", async (t) => {
 });
 
 // Error: Failed to set ICE candidate; RTCPeerConnection is closed.
+// Error: BUGBUG: Task queue scheduled delayed call too early.
 test("Destructors fire in MediaStreamTrack use-case", async (t) => {
   const { destructor, stop } = trackDestructors();
 
@@ -181,12 +177,10 @@ async function testSink(kind, t) {
   t.end();
 }
 
-// Hangs
 test("RTCAudioSink's destructor fires", (t) => {
   testSink("audio", t);
 });
 
-// Hangs
 test("RTCVideoSink's destructor fires", (t) => {
   testSink("video", t);
 });

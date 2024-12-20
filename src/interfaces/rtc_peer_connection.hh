@@ -16,6 +16,7 @@
 #include "src/dictionaries/node_webrtc/extended_rtc_configuration.hh"
 #include "src/dictionaries/node_webrtc/rtc_session_description_init.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
+#include "src/node/ref_ptr.hh"
 
 namespace webrtc {
 
@@ -125,10 +126,12 @@ private:
   ExtendedRTCConfiguration _cached_configuration;
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> _jinglePeerConnection;
 
+  // TODO(jack): make this a RefPtr if we ever stop using the default global
+  // PeerConnectionFactory
   PeerConnectionFactory *_factory;
   bool _shouldReleaseFactory;
 
-  std::vector<RTCDataChannel *> _channels;
+  std::vector<RefPtr<RTCDataChannel>> _channels;
 };
 
 } // namespace node_webrtc

@@ -107,14 +107,6 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
 
 RTCPeerConnection::~RTCPeerConnection() {
   _jinglePeerConnection = nullptr;
-  // TODO(jack): so the problem here is, the channels in _channels are never
-  // cleared, because I `->Ref()` them in the `wrap()` code. I _think_ I need to
-  // ref them in the wrap code because otherwise, they'll be eligible for early
-  // garbage collection, which seems bad. Really, what I should be doing is
-  // calling `->Ref()` whenever another reference to them is made, and
-  // `->Unref()` whenever that reference is no longer being used. That would
-  // track the ownership much better, because effectively it's the `wrap()` that
-  // "owns" it, whereas I'd like the objects (like RTCPeerConnection) to own it.
   _channels.clear();
   if (_factory) {
     if (_shouldReleaseFactory) {
@@ -597,7 +589,7 @@ RTCPeerConnection::CreateDataChannel(const Napi::CallbackInfo &info) {
   auto observer = new DataChannelObserver(_factory, dataChannel);
   auto channel = RTCDataChannel::wrap()->GetOrCreate(
       observer, observer->channel()); // NOLINT
-  _channels.push_back(channel);
+  _channels.emplace_back(channel);
 
   return channel->Value();
 }

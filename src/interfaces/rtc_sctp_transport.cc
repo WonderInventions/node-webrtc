@@ -51,16 +51,7 @@ RTCSctpTransport::RTCSctpTransport(const Napi::CallbackInfo &info)
   }
 }
 
-RTCSctpTransport::~RTCSctpTransport() {
-  Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
-  wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
-}
+RTCSctpTransport::~RTCSctpTransport() { wrap()->Release(this); }
 
 void RTCSctpTransport::Stop() {
   _transport->UnregisterObserver();
@@ -88,7 +79,6 @@ RTCSctpTransport *RTCSctpTransport::Create(
            env, &transport)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

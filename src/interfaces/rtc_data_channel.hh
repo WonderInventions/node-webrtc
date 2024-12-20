@@ -14,14 +14,15 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/enums/node_webrtc/binary_type.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
 #include "src/node/event_queue.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
 
 class DataChannelObserver;
-class PeerConnectionFactory;
 
 class RTCDataChannel : public AsyncObjectWrapWithLoop<RTCDataChannel>,
                        public webrtc::DataChannelObserver {
@@ -29,8 +30,12 @@ class RTCDataChannel : public AsyncObjectWrapWithLoop<RTCDataChannel>,
 
 public:
   explicit RTCDataChannel(const Napi::CallbackInfo &);
-
   ~RTCDataChannel() override;
+
+  RTCDataChannel(const RTCDataChannel &) = delete;
+  RTCDataChannel(RTCDataChannel &&) = delete;
+  RTCDataChannel &operator=(const RTCDataChannel &) = delete;
+  RTCDataChannel &operator=(RTCDataChannel &&) = delete;
 
   static Napi::FunctionReference &constructor();
 
@@ -85,7 +90,7 @@ private:
   bool _cached_ordered;
   std::string _cached_protocol;
   uint64_t _cached_buffered_amount;
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::DataChannelInterface> _jingleDataChannel;
 };
 
@@ -97,8 +102,12 @@ public:
   DataChannelObserver(
       PeerConnectionFactory *factory,
       rtc::scoped_refptr<webrtc::DataChannelInterface> jingleDataChannel);
+  ~DataChannelObserver() override = default;
 
-  ~DataChannelObserver() override;
+  DataChannelObserver(const DataChannelObserver &) = delete;
+  DataChannelObserver(DataChannelObserver &&) = delete;
+  DataChannelObserver &operator=(const DataChannelObserver &) = delete;
+  DataChannelObserver &operator=(DataChannelObserver &&) = delete;
 
   void OnStateChange() override;
   void OnMessage(const webrtc::DataBuffer &buffer) override;
@@ -108,7 +117,7 @@ public:
   }
 
 private:
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::DataChannelInterface> _jingleDataChannel;
 };
 

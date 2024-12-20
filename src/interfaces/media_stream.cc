@@ -31,9 +31,7 @@ MediaStream::Impl::Impl(PeerConnectionFactory *factory)
     : _factory(factory ? factory : PeerConnectionFactory::GetOrCreateDefault()),
       _stream(
           _factory->factory()->CreateLocalMediaStream(rtc::CreateRandomUuid())),
-      _shouldReleaseFactory(!factory) {
-  _factory->Ref();
-}
+      _shouldReleaseFactory(!factory) {}
 
 MediaStream::Impl::Impl(std::vector<MediaStreamTrack *> &&tracks,
                         PeerConnectionFactory *factory)
@@ -43,7 +41,6 @@ MediaStream::Impl::Impl(std::vector<MediaStreamTrack *> &&tracks,
       _stream(
           _factory->factory()->CreateLocalMediaStream(rtc::CreateRandomUuid())),
       _shouldReleaseFactory(!factory && tracks.empty()) {
-  _factory->Ref();
   for (auto const &track : tracks) {
     if (track->track()->kind() == track->track()->kAudioKind) {
       auto audioTrack =
@@ -61,17 +58,13 @@ MediaStream::Impl::Impl(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> &&stream,
     PeerConnectionFactory *factory)
     : _factory(factory ? factory : PeerConnectionFactory::GetOrCreateDefault()),
-      _stream(stream), _shouldReleaseFactory(!factory) {
-  _factory->Ref();
-}
+      _stream(stream), _shouldReleaseFactory(!factory) {}
 
 MediaStream::Impl::Impl(const RTCMediaStreamInit &init,
                         PeerConnectionFactory *factory)
     : _factory(factory ? factory : PeerConnectionFactory::GetOrCreateDefault()),
       _stream(_factory->factory()->CreateLocalMediaStream(init.id)),
-      _shouldReleaseFactory(!factory) {
-  _factory->Ref();
-}
+      _shouldReleaseFactory(!factory) {}
 
 MediaStream::Impl::~Impl() {
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());

@@ -14,20 +14,25 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/converters/napi.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
 
 class MediaStreamTrack;
-class PeerConnectionFactory;
 struct RTCMediaStreamInit;
 
 class MediaStream : public AsyncObjectWrap<MediaStream> {
 public:
   explicit MediaStream(const Napi::CallbackInfo &);
-
   ~MediaStream() override;
+
+  MediaStream(const MediaStream &) = delete;
+  MediaStream(MediaStream &&) = delete;
+  MediaStream &operator=(const MediaStream &) = delete;
+  MediaStream &operator=(MediaStream &&) = delete;
 
   static void Init(Napi::Env, Napi::Object);
 
@@ -43,22 +48,8 @@ public:
 private:
   class Impl {
   public:
-    Impl &operator=(Impl &&other) noexcept {
-      if (&other != this) {
-        _factory = other._factory;
-        other._factory = nullptr;
-        _stream = std::move(other._stream);
-        _shouldReleaseFactory = other._shouldReleaseFactory;
-        if (_shouldReleaseFactory) {
-          other._shouldReleaseFactory = false;
-        }
-      }
-      return *this;
-    }
-
-    ~Impl();
-
     explicit Impl(PeerConnectionFactory *factory = nullptr);
+    ~Impl();
 
     Impl(std::vector<MediaStreamTrack *> &&tracks,
          PeerConnectionFactory *factory = nullptr);
@@ -69,7 +60,20 @@ private:
     Impl(const RTCMediaStreamInit &init,
          PeerConnectionFactory *factory = nullptr);
 
-    PeerConnectionFactory *_factory;
+    Impl(const Impl &) = delete;
+    Impl &operator=(const Impl &) = delete;
+    Impl(Impl &&) = delete;
+    Impl &operator=(Impl &&other) noexcept {
+      if (&other != this) {
+        _factory = std::move(other._factory);
+        _stream = std::move(other._stream);
+        _shouldReleaseFactory = other._shouldReleaseFactory;
+        other._shouldReleaseFactory = false;
+      }
+      return *this;
+    }
+
+    RefPtr<PeerConnectionFactory> _factory;
     rtc::scoped_refptr<webrtc::MediaStreamInterface> _stream;
     bool _shouldReleaseFactory;
   };

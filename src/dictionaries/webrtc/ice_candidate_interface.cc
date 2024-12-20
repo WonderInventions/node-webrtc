@@ -47,7 +47,6 @@ FROM_NAPI_IMPL(std::shared_ptr<webrtc::IceCandidateInterface>, napi_value) {
       });
 }
 
-// NOLINTBEGIN(readability-function-cognitive-complexity)
 TO_NAPI_IMPL(webrtc::IceCandidateInterface *, pair) {
   auto env = pair.first;
   Napi::EscapableHandleScope scope(env);
@@ -138,7 +137,6 @@ TO_NAPI_IMPL(webrtc::IceCandidateInterface *, pair) {
 
   return Pure(scope.Escape(object));
 }
-// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace node_webrtc
 

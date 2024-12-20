@@ -190,7 +190,6 @@ RTCDtlsTransport *RTCDtlsTransport::Create(
            env, &transport)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

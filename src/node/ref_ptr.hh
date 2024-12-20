@@ -17,15 +17,28 @@ namespace node_webrtc {
  */
 template <typename T> class RefPtr {
 public:
-  explicit RefPtr(T *ptr) : _ptr(ptr) { _ptr->Ref(); }
+  explicit RefPtr(T *ptr) : _ptr(ptr) {
+    if (_ptr) {
+      _ptr->Ref();
+    }
+  }
   // NOTE(jack): I'd like it to be impossible to make an invalid one of these.
   // Unfortunately, due to Reasons, we must provide a default constructor.
   RefPtr() : _ptr(nullptr) {}
 
-  // Allow assignment from a raw pointer, as an alternate constructor
+  // Allow assignment from a raw pointer, as an alternate copy constructor
   RefPtr &operator=(T *ptr) {
+    if (_ptr == ptr) {
+      return *this;
+    }
+
+    if (_ptr) {
+      _ptr->Unref();
+    }
     _ptr = ptr;
-    _ptr->Ref();
+    if (_ptr) {
+      _ptr->Ref();
+    }
     return *this;
   }
   // Allow implicit conversion to a raw pointer
@@ -40,7 +53,11 @@ public:
   }
 
   // Copy constructor: add another ref
-  RefPtr(const RefPtr &other) : _ptr(other._ptr) { _ptr->Ref(); }
+  RefPtr(const RefPtr &other) : _ptr(other._ptr) {
+    if (_ptr) {
+      _ptr->Ref();
+    }
+  }
   RefPtr &operator=(const RefPtr &other) {
     if (this == &other) {
       return *this;
@@ -50,7 +67,9 @@ public:
       _ptr->Unref();
     }
     _ptr = other._ptr;
-    _ptr->Ref();
+    if (_ptr) {
+      _ptr->Ref();
+    }
     return *this;
   }
 
@@ -63,7 +82,7 @@ public:
     }
     _ptr = other._ptr;
     other._ptr = nullptr;
-    _ptr->Ref();
+    // We keep the `->Ref()` call that other._ptr already made
     return *this;
   }
 

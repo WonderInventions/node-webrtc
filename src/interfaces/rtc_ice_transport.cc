@@ -68,16 +68,7 @@ void RTCIceTransport::TakeSnapshot() {
   }
 }
 
-RTCIceTransport::~RTCIceTransport() {
-  Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
-  wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
-}
+RTCIceTransport::~RTCIceTransport() { wrap()->Release(this); }
 
 void RTCIceTransport::OnRTCDtlsTransportStopped() {
   std::lock_guard<std::mutex> lock(_mutex);
@@ -116,7 +107,6 @@ RTCIceTransport *RTCIceTransport::Create(
            env, &transport)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

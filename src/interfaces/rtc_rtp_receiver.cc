@@ -152,7 +152,6 @@ RTCRtpReceiver *RTCRtpReceiver::Create(
            env, &receiver)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

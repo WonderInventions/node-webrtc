@@ -31,14 +31,7 @@ DataChannelObserver::DataChannelObserver(
     PeerConnectionFactory *factory,
     rtc::scoped_refptr<webrtc::DataChannelInterface> jingleDataChannel)
     : _factory(factory), _jingleDataChannel(std::move(jingleDataChannel)) {
-  _factory->Ref();
   _jingleDataChannel->RegisterObserver(this);
-}
-
-DataChannelObserver::~DataChannelObserver() {
-  Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
 }
 
 void DataChannelObserver::OnStateChange() {
@@ -76,7 +69,6 @@ RTCDataChannel::RTCDataChannel(const Napi::CallbackInfo &info)
       info[0].As<Napi::External<node_webrtc::DataChannelObserver>>().Data();
 
   _factory = observer->_factory;
-  _factory->Ref();
 
   _jingleDataChannel = observer->_jingleDataChannel;
   _jingleDataChannel->RegisterObserver(this);
@@ -95,14 +87,7 @@ RTCDataChannel::RTCDataChannel(const Napi::CallbackInfo &info)
   _cached_buffered_amount = 0;
 }
 
-RTCDataChannel::~RTCDataChannel() {
-  std::cout << "~RTCDataChannel(): start\n";
-  _factory->Unref();
-  _factory = nullptr;
-
-  wrap()->Release(this);
-  std::cout << "~RTCDataChannel(): end\n";
-}
+RTCDataChannel::~RTCDataChannel() { wrap()->Release(this); }
 
 void RTCDataChannel::CleanupInternals() {
   if (_jingleDataChannel == nullptr) {
@@ -173,11 +158,12 @@ void RTCDataChannel::HandleMessage(RTCDataChannel &channel,
         });
     value = array;
   } else {
-    // This reinterpret_cast correct: if the message is not binary, it should
-    // be a valid UTF-8 string.
+    // SAFETY: this reinterpret_cast is correct; if the message is not binary,
+    // it should be a valid UTF-8 string.
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     auto str = Napi::String::New(
-        env, reinterpret_cast<const char *>(buffer.data.data()),
-        size); // NOLINT
+        env, reinterpret_cast<const char *>(buffer.data.data()), size);
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
     value = str;
   }
   auto object = Napi::Object::New(env);
