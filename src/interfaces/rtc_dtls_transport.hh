@@ -13,6 +13,7 @@
 #include <webrtc/api/dtls_transport_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
@@ -22,8 +23,6 @@ class RTCError;
 }
 
 namespace node_webrtc {
-
-class PeerConnectionFactory;
 
 class RTCDtlsTransport : public AsyncObjectWrapWithLoop<RTCDtlsTransport>,
                          public webrtc::DtlsTransportObserverInterface {

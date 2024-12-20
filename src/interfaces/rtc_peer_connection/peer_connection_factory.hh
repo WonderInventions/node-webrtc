@@ -14,20 +14,7 @@
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/modules/audio_device/include/audio_device.h>
-
-namespace rtc {
-
-class NetworkManager;
-class PacketSocketFactory;
-class Thread;
-
-} // namespace rtc
-
-namespace webrtc {
-
-class PeerConnectionFactoryInterface;
-
-} // namespace webrtc
+#include <webrtc/rtc_base/thread.h>
 
 namespace node_webrtc {
 
@@ -78,9 +65,9 @@ private:
   std::unique_ptr<rtc::Thread> _signalingThread;
   std::unique_ptr<rtc::Thread> _workerThread;
 
-  static PeerConnectionFactory *_default;
-  static std::mutex _mutex;
-  static int _references;
+  static PeerConnectionFactory *_default; // NOLINT
+  static std::mutex _mutex;               // NOLINT
+  static int _references;                 // NOLINT
 
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> _factory;
   rtc::scoped_refptr<webrtc::AudioDeviceModule> _audioDeviceModule;

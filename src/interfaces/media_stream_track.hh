@@ -15,13 +15,12 @@
 #include "src/converters.hh"
 #include "src/converters/napi.hh"
 #include "src/enums/webrtc/track_state.hh" // IWYU pragma: keep. Needed for conversions
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
-
-class PeerConnectionFactory;
 
 class MediaStreamTrack : public AsyncObjectWrapWithLoop<MediaStreamTrack>,
                          public webrtc::ObserverInterface {

@@ -13,13 +13,12 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/converters/napi.hh"
+#include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
-
-class PeerConnectionFactory;
 
 class RTCRtpSender : public AsyncObjectWrap<RTCRtpSender> {
 public:
