@@ -7,6 +7,7 @@
  */
 #include "src/interfaces/rtc_rtp_receiver.hh"
 
+#include <iostream>
 #include <webrtc/api/rtp_receiver_interface.h>
 
 #include "src/converters.hh"
@@ -48,6 +49,7 @@ RTCRtpReceiver::RTCRtpReceiver(const Napi::CallbackInfo &info)
 }
 
 RTCRtpReceiver::~RTCRtpReceiver() {
+  std::cout << "~RTCRtpReceiver()\n";
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
 
   wrap()->Release(this);
@@ -177,6 +179,7 @@ void RTCRtpReceiver::Init(Napi::Env env, Napi::Object exports) {
 }
 
 FROM_NAPI_IMPL(RTCRtpReceiver *, value) {
+  std::cout << "Napi::Value to RTCRtpReceiver\n";
   return From<Napi::Object>(value).FlatMap<RTCRtpReceiver *>(
       [](Napi::Object object) {
         auto isRTCRtpReceiver = false;
@@ -198,7 +201,10 @@ FROM_NAPI_IMPL(RTCRtpReceiver *, value) {
 }
 
 TO_NAPI_IMPL(RTCRtpReceiver *, pair) {
-  return Pure(pair.second->Value().As<Napi::Value>());
+  auto v = pair.second->Value().As<Napi::Value>();
+  std::cout << "RTCRtpReceiver to Napi::Value: IsEmpty: " << v.IsEmpty()
+            << "\n";
+  return Pure(v);
 }
 
 } // namespace node_webrtc

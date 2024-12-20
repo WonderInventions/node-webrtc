@@ -7,6 +7,7 @@
  */
 #include "src/interfaces/rtc_peer_connection.hh"
 
+#include <iostream>
 #include <webrtc/api/media_types.h>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/rtc_error.h>
@@ -50,6 +51,7 @@
 #include "src/node/error_factory.hh"
 #include "src/node/events.hh"
 #include "src/node/promise.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/utility.hh"
 
 namespace node_webrtc {
@@ -631,14 +633,31 @@ RTCPeerConnection::SetConfiguration(const Napi::CallbackInfo &info) {
 }
 
 Napi::Value RTCPeerConnection::GetReceivers(const Napi::CallbackInfo &info) {
+  std::cout << "RTCPeerConnection::GetReceivers(): start\n";
   std::vector<RTCRtpReceiver *> receivers;
   if (_jinglePeerConnection) {
     for (const auto &receiver : _jinglePeerConnection->GetReceivers()) {
-      receivers.emplace_back(
-          RTCRtpReceiver::wrap()->GetOrCreate(_factory, receiver));
+      // TODO(jack): What's happening here: the wrap() is caching a value that
+      // is Empty, but hasn't yet had its destructor called. We're returning
+      // that empty value, and getting an error when trying to assign it to the
+      // Napi::Array.
+      //
+      // What I think we should be doing is, instead of having some
+      // sort of global cache, have a per-object `wrap()`. That way, doing Ref
+      // and Unref inside the wrap will actually correspond to the ownership of
+      // the ptr (probably should be RefPtr as an internal impl), and we won't
+      // have memory leaks (like before) or premature frees (like now).
+      auto new_receiver =
+          RTCRtpReceiver::wrap()->GetOrCreate(_factory, receiver);
+      std::cout << "RTCPeerConnection::GetReceivers(): IsEmpty(): "
+                << new_receiver->Value().IsEmpty() << "\n";
+      receivers.emplace_back(new_receiver);
     }
   }
+  std::cout << "RTCPeerConnection::GetReceivers(): " << receivers.size()
+            << " elems\n";
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), receivers, result, Napi::Value)
+  std::cout << "RTCPeerConnection::GetReceivers(): end\n";
   return result;
 }
 
