@@ -308,7 +308,7 @@ file(GLOB_RECURSE MODULE_SRC src/*.cc src/*.hh)
 add_library(${MODULE} SHARED ${MODULE_SRC} ${CMAKE_JS_SRC})
 set_target_properties(${MODULE} PROPERTIES PREFIX "" SUFFIX ".node")
 
-set_property(TARGET ${MODULE} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${MODULE} PROPERTY CXX_STANDARD 20)
 
 # NOTE(mroberts): Workaround for
 #

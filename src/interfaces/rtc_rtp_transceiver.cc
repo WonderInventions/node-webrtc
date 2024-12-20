@@ -36,29 +36,20 @@ RTCRtpTransceiver::RTCRtpTransceiver(const Napi::CallbackInfo &info)
     return;
   }
 
-  auto factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
+  _factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
   auto transceiver =
       *info[1]
            .As<Napi::External<
                rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>>()
            .Data();
 
-  _factory = factory;
-  _factory->Ref();
-
   _transceiver = std::move(transceiver);
 }
 
 RTCRtpTransceiver::~RTCRtpTransceiver() {
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
 
   wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
 }
 
 Napi::Value RTCRtpTransceiver::GetMid(const Napi::CallbackInfo &info) {
@@ -160,7 +151,6 @@ RTCRtpTransceiver *RTCRtpTransceiver::Create(
            env, &transceiver)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

@@ -14,6 +14,7 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/node/async_object_wrap_with_loop.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace webrtc {
@@ -28,8 +29,12 @@ class RTCDtlsTransport : public AsyncObjectWrapWithLoop<RTCDtlsTransport>,
                          public webrtc::DtlsTransportObserverInterface {
 public:
   explicit RTCDtlsTransport(const Napi::CallbackInfo &);
-
   ~RTCDtlsTransport() override;
+
+  RTCDtlsTransport(const RTCDtlsTransport &) = delete;
+  RTCDtlsTransport(RTCDtlsTransport &&) = delete;
+  RTCDtlsTransport &operator=(const RTCDtlsTransport &) = delete;
+  RTCDtlsTransport &operator=(RTCDtlsTransport &&) = delete;
 
   static void Init(Napi::Env, Napi::Object);
 
@@ -60,7 +65,7 @@ private:
   webrtc::DtlsTransportState _state;
   std::vector<rtc::Buffer> _certs;
 
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> _transport;
 };
 

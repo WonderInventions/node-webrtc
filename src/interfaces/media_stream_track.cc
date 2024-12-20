@@ -36,15 +36,12 @@ MediaStreamTrack::MediaStreamTrack(const Napi::CallbackInfo &info)
   }
 
   // FIXME(mroberts): There is a safer conversion here.
-  auto factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
+  _factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
   auto track =
       *info[1]
            .As<Napi::External<
                rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>>>()
            .Data();
-
-  _factory = factory;
-  _factory->Ref();
 
   _track = std::move(track);
   _track->RegisterObserver(this);
@@ -57,8 +54,6 @@ MediaStreamTrack::~MediaStreamTrack() {
   _track = nullptr;
 
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
 
   wrap()->Release(this);
 }

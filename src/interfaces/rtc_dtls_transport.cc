@@ -34,7 +34,8 @@ Napi::FunctionReference &RTCDtlsTransport::constructor() {
   return constructor;
 }
 
-static std::vector<rtc::Buffer>
+namespace {
+std::vector<rtc::Buffer>
 copy_certs(webrtc::DtlsTransportInformation const &information) {
   auto certs = information.remote_ssl_certificates();
   if (certs) {
@@ -53,6 +54,7 @@ copy_certs(webrtc::DtlsTransportInformation const &information) {
 
   return {};
 }
+} // namespace
 
 RTCDtlsTransport::RTCDtlsTransport(const Napi::CallbackInfo &info)
     : AsyncObjectWrapWithLoop<RTCDtlsTransport>("RTCDtlsTransport", *this,
@@ -63,15 +65,12 @@ RTCDtlsTransport::RTCDtlsTransport(const Napi::CallbackInfo &info)
     return;
   }
 
-  auto factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
+  _factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
   auto transport =
       *info[1]
            .As<Napi::External<
                rtc::scoped_refptr<webrtc::DtlsTransportInterface>>>()
            .Data();
-
-  _factory = factory;
-  _factory->Ref();
 
   _transport = std::move(transport);
 
@@ -91,14 +90,8 @@ RTCDtlsTransport::RTCDtlsTransport(const Napi::CallbackInfo &info)
 
 RTCDtlsTransport::~RTCDtlsTransport() {
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
 
   wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
 }
 
 void RTCDtlsTransport::Stop() {

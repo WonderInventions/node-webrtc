@@ -14,6 +14,7 @@
 #include <webrtc/api/sctp_transport_interface.h>
 
 #include "src/node/async_object_wrap_with_loop.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
@@ -24,8 +25,12 @@ class RTCSctpTransport : public AsyncObjectWrapWithLoop<RTCSctpTransport>,
                          public webrtc::SctpTransportObserverInterface {
 public:
   explicit RTCSctpTransport(const Napi::CallbackInfo &);
-
   ~RTCSctpTransport() override;
+
+  RTCSctpTransport(const RTCSctpTransport &) = delete;
+  RTCSctpTransport(RTCSctpTransport &&) = delete;
+  RTCSctpTransport &operator=(const RTCSctpTransport &) = delete;
+  RTCSctpTransport &operator=(RTCSctpTransport &&) = delete;
 
   static void Init(Napi::Env, Napi::Object);
 
@@ -52,7 +57,7 @@ private:
   Napi::Value GetMaxChannels(const Napi::CallbackInfo &);
 
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> _dtls_transport;
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::SctpTransportInterface> _transport;
 };
 

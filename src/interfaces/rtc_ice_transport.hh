@@ -17,6 +17,7 @@
 
 #include "src/enums/node_webrtc/rtc_ice_component.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace cricket {
@@ -32,8 +33,12 @@ class RTCIceTransport
       public sigslot::has_slots<sigslot::multi_threaded_local> {
 public:
   explicit RTCIceTransport(const Napi::CallbackInfo &);
-
   ~RTCIceTransport() override;
+
+  RTCIceTransport(const RTCIceTransport &) = delete;
+  RTCIceTransport(RTCIceTransport &&) = delete;
+  RTCIceTransport &operator=(const RTCIceTransport &) = delete;
+  RTCIceTransport &operator=(RTCIceTransport &&) = delete;
 
   static void Init(Napi::Env, Napi::Object);
 
@@ -71,7 +76,7 @@ private:
   Napi::Value GetRemoteParameters(const Napi::CallbackInfo &);
 
   RTCIceComponent _component = RTCIceComponent::kRtp;
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   cricket::IceGatheringState _gathering_state =
       cricket::IceGatheringState::kIceGatheringNew;
   std::mutex _mutex{};

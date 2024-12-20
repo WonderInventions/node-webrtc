@@ -29,15 +29,12 @@ RTCIceTransport::RTCIceTransport(const Napi::CallbackInfo &info)
     return;
   }
 
-  auto factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
+  _factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
   auto transport =
       *info[1]
            .As<Napi::External<
                rtc::scoped_refptr<webrtc::IceTransportInterface>>>()
            .Data();
-
-  _factory = factory;
-  _factory->Ref();
 
   _transport = std::move(transport);
 

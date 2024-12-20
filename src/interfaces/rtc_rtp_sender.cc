@@ -39,28 +39,19 @@ RTCRtpSender::RTCRtpSender(const Napi::CallbackInfo &info)
     return;
   }
 
-  auto factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
+  _factory = PeerConnectionFactory::Unwrap(info[0].ToObject());
   auto sender =
       *info[1]
            .As<Napi::External<rtc::scoped_refptr<webrtc::RtpSenderInterface>>>()
            .Data();
-
-  _factory = factory;
-  _factory->Ref();
 
   _sender = std::move(sender);
 }
 
 RTCRtpSender::~RTCRtpSender() {
   Napi::HandleScope scope(PeerConnectionFactory::constructor().Env());
-  _factory->Unref();
-  _factory = nullptr;
 
   wrap()->Release(this);
-  // Decrement refcount from e.g. wrap()->Create if we aren't already down to 0
-  if (!this->Value().IsEmpty()) {
-    this->Unref();
-  }
 }
 
 Napi::Value RTCRtpSender::GetTrack(const Napi::CallbackInfo &info) {
@@ -194,7 +185,6 @@ RTCRtpSender::Create(PeerConnectionFactory *factory,
            env, &sender)});
 
   auto unwrapped = Unwrap(object);
-  unwrapped->Ref();
   return unwrapped;
 }
 

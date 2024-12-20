@@ -7,6 +7,7 @@
  */
 #pragma once
 
+#include <memory>
 #include <node-addon-api/napi.h>
 #include <webrtc/api/media_stream_interface.h>
 #include <webrtc/api/scoped_refptr.h>
@@ -15,6 +16,7 @@
 #include "src/converters/napi.hh"
 #include "src/enums/webrtc/track_state.hh" // IWYU pragma: keep. Needed for conversions
 #include "src/node/async_object_wrap_with_loop.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace node_webrtc {
@@ -44,7 +46,7 @@ public:
                   : _track->state() ==
                         webrtc::MediaStreamTrackInterface::TrackState::kLive;
   }
-  PeerConnectionFactory *factory() { return _factory; }
+  RefPtr<PeerConnectionFactory> factory() { return _factory; }
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track() {
     return _track;
   }
@@ -77,7 +79,7 @@ private:
 
   bool _ended = false;
   bool _enabled;
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> _track;
 };
 

@@ -14,6 +14,7 @@
 
 #include "src/converters/napi.hh"
 #include "src/node/async_object_wrap.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
 
 namespace webrtc {
@@ -27,8 +28,11 @@ class PeerConnectionFactory;
 class RTCRtpReceiver : public AsyncObjectWrap<RTCRtpReceiver> {
 public:
   explicit RTCRtpReceiver(const Napi::CallbackInfo &);
-
   ~RTCRtpReceiver() override;
+  RTCRtpReceiver(const RTCRtpReceiver &) = delete;
+  RTCRtpReceiver(RTCRtpReceiver &&) = delete;
+  RTCRtpReceiver &operator=(const RTCRtpReceiver &) = delete;
+  RTCRtpReceiver &operator=(RTCRtpReceiver &&) = delete;
 
   static void Init(Napi::Env, Napi::Object);
 
@@ -59,7 +63,7 @@ private:
   Napi::Value GetSynchronizationSources(const Napi::CallbackInfo &);
   Napi::Value GetStats(const Napi::CallbackInfo &);
 
-  PeerConnectionFactory *_factory;
+  RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> _receiver;
 };
 

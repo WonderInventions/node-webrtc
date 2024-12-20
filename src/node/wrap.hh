@@ -8,7 +8,6 @@
 #pragma once
 
 #include "src/utilities/bidi_map.hh"
-#include <iostream>
 
 namespace node_webrtc {
 
@@ -28,25 +27,13 @@ public:
   T GetOrCreate(V... args, U key) {
     return _map.computeIfAbsent(key, [this, key, args...]() {
       auto out = _create(args..., key);
-      // NOTE(jack): If we do not do this, then out is liable to be
-      // garbage-collected by Javascript, which can lead to all sorts of
-      // nasty problems. So long as `Release()` is called appropriately for
-      // objects that are removed from the map, everything works.
-      out->Ref();
       return out;
     });
   }
 
   T Get(U key) { return _map.get(key).FromMaybe(nullptr); }
 
-  void Release(T value) {
-    if (!value->IsEmpty() && _map.reverseHas(value)) {
-      // `Release()` can be called from objects that were made not through
-      // the wrap interface, so only unref if they were created from here.
-      value->Unref();
-    }
-    _map.reverseRemove(value);
-  }
+  void Release(T value) { _map.reverseRemove(value); }
 
 private:
   T (*_create)(V..., U);
