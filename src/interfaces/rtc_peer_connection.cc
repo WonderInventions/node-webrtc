@@ -215,7 +215,7 @@ void RTCPeerConnection::OnDataChannel(
   auto observer = new DataChannelObserver(_factory, channel);
   Dispatch(CreateCallback<RTCPeerConnection>([this, observer]() {
     auto channel =
-        RTCDataChannel::wrap()->GetOrCreate(observer, observer->channel());
+        _data_channel_wrap.GetOrCreate(observer, observer->channel());
     MakeCallback("ondatachannel", {channel->Value()});
   }));
 }
@@ -243,15 +243,14 @@ void RTCPeerConnection::OnAddTrack(
     }
     auto mediaStreams = std::vector<MediaStream *>();
     for (auto const &stream : streams) {
-      auto mediaStream = MediaStream::wrap()->GetOrCreate(_factory, stream);
+      auto mediaStream = _stream_wrap.GetOrCreate(_factory, stream);
       mediaStreams.push_back(mediaStream);
     }
     CONVERT_OR_THROW_AND_RETURN_VOID_NAPI(Env(), mediaStreams, streamArray,
                                           Napi::Value)
-    MakeCallback(
-        "ontrack",
-        {RTCRtpReceiver::wrap()->GetOrCreate(_factory, receiver)->Value(),
-         streamArray, Env().Null()});
+    MakeCallback("ontrack",
+                 {_receiver_wrap.GetOrCreate(_factory, receiver)->Value(),
+                  streamArray, Env().Null()});
   }));
 }
 
@@ -259,29 +258,26 @@ void RTCPeerConnection::OnTrack(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
   auto receiver = transceiver->receiver();
   auto streams = receiver->streams();
-  Dispatch(CreateCallback<RTCPeerConnection>(
-      [this, transceiver, receiver, streams]() {
-        if (_factory == nullptr) {
-          // We have closed, but have not processed close event to stop the
-          // event loop yet. In that case, we should not be broadcasting this
-          // event
-          return;
-        }
-        auto mediaStreams = std::vector<MediaStream *>();
-        for (auto const &stream : streams) {
-          auto mediaStream = MediaStream::wrap()->GetOrCreate(_factory, stream);
-          mediaStreams.push_back(mediaStream);
-        }
-        CONVERT_OR_THROW_AND_RETURN_VOID_NAPI(Env(), mediaStreams, streamArray,
-                                              Napi::Value)
-        MakeCallback(
-            "ontrack",
-            {RTCRtpReceiver::wrap()->GetOrCreate(_factory, receiver)->Value(),
-             streamArray,
-             RTCRtpTransceiver::wrap()
-                 ->GetOrCreate(_factory, transceiver)
-                 ->Value()});
-      }));
+  Dispatch(CreateCallback<RTCPeerConnection>([this, transceiver, receiver,
+                                              streams]() {
+    if (_factory == nullptr) {
+      // We have closed, but have not processed close event to stop the
+      // event loop yet. In that case, we should not be broadcasting this
+      // event
+      return;
+    }
+    auto mediaStreams = std::vector<MediaStream *>();
+    for (auto const &stream : streams) {
+      auto mediaStream = _stream_wrap.GetOrCreate(_factory, stream);
+      mediaStreams.push_back(mediaStream);
+    }
+    CONVERT_OR_THROW_AND_RETURN_VOID_NAPI(Env(), mediaStreams, streamArray,
+                                          Napi::Value)
+    MakeCallback(
+        "ontrack",
+        {_receiver_wrap.GetOrCreate(_factory, receiver)->Value(), streamArray,
+         _transceiver_wrap.GetOrCreate(_factory, transceiver)->Value()});
+  }));
 }
 
 void RTCPeerConnection::OnRemoveStream(
@@ -320,7 +316,7 @@ Napi::Value RTCPeerConnection::AddTrack(const Napi::CallbackInfo &info) {
     return env.Undefined();
   }
   auto rtpSender = result.value();
-  return RTCRtpSender::wrap()->GetOrCreate(_factory, rtpSender)->Value();
+  return _sender_wrap.GetOrCreate(_factory, rtpSender)->Value();
 }
 
 Napi::Value RTCPeerConnection::AddTransceiver(const Napi::CallbackInfo &info) {
@@ -365,9 +361,7 @@ Napi::Value RTCPeerConnection::AddTransceiver(const Napi::CallbackInfo &info) {
     return env.Undefined();
   }
   auto rtpTransceiver = result.value();
-  return RTCRtpTransceiver::wrap()
-      ->GetOrCreate(_factory, rtpTransceiver)
-      ->Value();
+  return _transceiver_wrap.GetOrCreate(_factory, rtpTransceiver)->Value();
 }
 
 Napi::Value RTCPeerConnection::RemoveTrack(const Napi::CallbackInfo &info) {
@@ -589,8 +583,8 @@ RTCPeerConnection::CreateDataChannel(const Napi::CallbackInfo &info) {
 
   // This memory is freed in rtc_data_channel.cc, in the constructor.
   auto observer = new DataChannelObserver(_factory, dataChannel);
-  auto channel = RTCDataChannel::wrap()->GetOrCreate(
-      observer, observer->channel()); // NOLINT
+  auto channel =
+      _data_channel_wrap.GetOrCreate(observer, observer->channel()); // NOLINT
   _channels.emplace_back(channel);
 
   return channel->Value();
@@ -637,18 +631,7 @@ Napi::Value RTCPeerConnection::GetReceivers(const Napi::CallbackInfo &info) {
   std::vector<RTCRtpReceiver *> receivers;
   if (_jinglePeerConnection) {
     for (const auto &receiver : _jinglePeerConnection->GetReceivers()) {
-      // TODO(jack): What's happening here: the wrap() is caching a value that
-      // is Empty, but hasn't yet had its destructor called. We're returning
-      // that empty value, and getting an error when trying to assign it to the
-      // Napi::Array.
-      //
-      // What I think we should be doing is, instead of having some
-      // sort of global cache, have a per-object `wrap()`. That way, doing Ref
-      // and Unref inside the wrap will actually correspond to the ownership of
-      // the ptr (probably should be RefPtr as an internal impl), and we won't
-      // have memory leaks (like before) or premature frees (like now).
-      auto new_receiver =
-          RTCRtpReceiver::wrap()->GetOrCreate(_factory, receiver);
+      auto new_receiver = _receiver_wrap.GetOrCreate(_factory, receiver);
       std::cout << "RTCPeerConnection::GetReceivers(): IsEmpty(): "
                 << new_receiver->Value().IsEmpty() << "\n";
       receivers.emplace_back(new_receiver);
@@ -665,7 +648,7 @@ Napi::Value RTCPeerConnection::GetSenders(const Napi::CallbackInfo &info) {
   std::vector<RTCRtpSender *> senders;
   if (_jinglePeerConnection) {
     for (const auto &sender : _jinglePeerConnection->GetSenders()) {
-      senders.emplace_back(RTCRtpSender::wrap()->GetOrCreate(_factory, sender));
+      senders.emplace_back(_sender_wrap.GetOrCreate(_factory, sender));
     }
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), senders, result, Napi::Value)
@@ -750,7 +733,7 @@ Napi::Value RTCPeerConnection::GetTransceivers(const Napi::CallbackInfo &info) {
           webrtc::SdpSemantics::kUnifiedPlan) {
     for (const auto &transceiver : _jinglePeerConnection->GetTransceivers()) {
       transceivers.emplace_back(
-          RTCRtpTransceiver::wrap()->GetOrCreate(_factory, transceiver));
+          _transceiver_wrap.GetOrCreate(_factory, transceiver));
     }
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), transceivers, result,
@@ -913,9 +896,9 @@ RTCPeerConnection::GetPendingRemoteDescription(const Napi::CallbackInfo &info) {
 
 Napi::Value RTCPeerConnection::GetSctp(const Napi::CallbackInfo &info) {
   return _jinglePeerConnection && _jinglePeerConnection->GetSctpTransport()
-             ? RTCSctpTransport::wrap()
-                   ->GetOrCreate(_factory,
-                                 _jinglePeerConnection->GetSctpTransport())
+             ? _transport_wrap
+                   .GetOrCreate(_factory,
+                                _jinglePeerConnection->GetSctpTransport())
                    ->Value()
              : info.Env().Null();
 }

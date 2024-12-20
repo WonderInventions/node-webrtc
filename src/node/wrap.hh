@@ -7,15 +7,55 @@
  */
 #pragma once
 
+#include "src/node/ref_ptr.hh"
 #include "src/utilities/bidi_map.hh"
+#include <type_traits>
 
 namespace node_webrtc {
 
 /**
+ * Class that provides strong ownership of types `T`, caching based on a key
+ * `U`.
+ *
+ * Assumes that `T` has a static member named `wrap()` with the same argument
+ * instantiation.
+ */
+template <typename T, typename U, typename... V> class OwnedWrapImpl {
+private:
+  using Output = RefPtr<std::remove_pointer_t<T>>;
+
+public:
+  OwnedWrapImpl() = default;
+  ~OwnedWrapImpl() = default;
+  OwnedWrapImpl(OwnedWrapImpl const &) = delete;
+  OwnedWrapImpl(OwnedWrapImpl &&) = delete;
+  OwnedWrapImpl &operator=(OwnedWrapImpl const &) = delete;
+  OwnedWrapImpl &operator=(OwnedWrapImpl &&) = delete;
+
+  Output GetOrCreate(V... args, U key) {
+    return _map.computeIfAbsent(key, [this, key, args...]() {
+      auto out = T::wrap()->GetOrCreate(args..., key);
+      return Output(out);
+    });
+  }
+
+  Output Get(U key) { return _map.get(key).FromMaybe(nullptr); }
+
+  void Release(T value) { _map.reverseRemove(value); }
+
+private:
+  BidiMap<U, Output> _map;
+};
+
+/**
  * Class that provides weak ownership of types `T`, caching based on a key `U`.
+ *
+ * Used to provide a global cache of ObjectWrap objects, so that we don't have
+ * to continuously re-construct them from their constituent parts every time.
  */
 template <typename T, typename U, typename... V> class Wrap {
 public:
+  using owned = OwnedWrapImpl<T, U, V...>;
   Wrap(Wrap const &) = delete;
   Wrap(Wrap &&) = delete;
   Wrap &operator=(Wrap const &) = delete;
@@ -39,5 +79,8 @@ private:
   T (*_create)(V..., U);
   BidiMap<U, T> _map;
 };
+
+template <typename T>
+using OwnedWrap = typename std::remove_reference_t<decltype(*T::wrap())>::owned;
 
 } // namespace node_webrtc

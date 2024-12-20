@@ -59,14 +59,11 @@ Napi::Value RTCRtpTransceiver::GetMid(const Napi::CallbackInfo &info) {
 }
 
 Napi::Value RTCRtpTransceiver::GetSender(const Napi::CallbackInfo &) {
-  return RTCRtpSender::wrap()
-      ->GetOrCreate(_factory, _transceiver->sender())
-      ->Value();
+  return _sender_wrap.GetOrCreate(_factory, _transceiver->sender())->Value();
 }
 
 Napi::Value RTCRtpTransceiver::GetReceiver(const Napi::CallbackInfo &) {
-  return RTCRtpReceiver::wrap()
-      ->GetOrCreate(_factory, _transceiver->receiver())
+  return _receiver_wrap.GetOrCreate(_factory, _transceiver->receiver())
       ->Value();
 }
 

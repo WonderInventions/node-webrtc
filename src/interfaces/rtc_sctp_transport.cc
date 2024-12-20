@@ -98,9 +98,7 @@ void RTCSctpTransport::OnStateChange(
 }
 
 Napi::Value RTCSctpTransport::GetTransport(const Napi::CallbackInfo &) {
-  return RTCDtlsTransport::wrap()
-      ->GetOrCreate(_factory, _dtls_transport)
-      ->Value();
+  return _transport_wrap.GetOrCreate(_factory, _dtls_transport)->Value();
 }
 
 Napi::Value RTCSctpTransport::GetState(const Napi::CallbackInfo &info) {

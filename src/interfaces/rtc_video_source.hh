@@ -16,7 +16,9 @@
 #include <webrtc/media/base/adapted_video_track_source.h>
 
 #include "src/dictionaries/node_webrtc/rtc_video_source_init.hh"
+#include "src/interfaces/media_stream_track.hh"
 #include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/node/wrap.hh"
 
 namespace webrtc {
 class VideoFrame;
@@ -26,18 +28,21 @@ namespace node_webrtc {
 
 class RTCVideoTrackSource : public rtc::AdaptedVideoTrackSource {
 public:
-  RTCVideoTrackSource()
-      : rtc::AdaptedVideoTrackSource(), _is_screencast(false) {}
+  RTCVideoTrackSource() : _is_screencast(false) {}
 
   RTCVideoTrackSource(const bool is_screencast,
                       const absl::optional<bool> needs_denoising)
-      : rtc::AdaptedVideoTrackSource(), _is_screencast(is_screencast),
-        _needs_denoising(needs_denoising) {}
+      : _is_screencast(is_screencast), _needs_denoising(needs_denoising) {}
 
   ~RTCVideoTrackSource() override {
     PeerConnectionFactory::Release();
     _factory = nullptr;
   }
+
+  RTCVideoTrackSource(const RTCVideoTrackSource &) = delete;
+  RTCVideoTrackSource(RTCVideoTrackSource &&) = delete;
+  RTCVideoTrackSource &operator=(const RTCVideoTrackSource &) = delete;
+  RTCVideoTrackSource &operator=(RTCVideoTrackSource &&) = delete;
 
   SourceState state() const override {
     return webrtc::MediaSourceInterface::SourceState::kLive;
@@ -77,6 +82,7 @@ private:
   Napi::Value OnFrame(const Napi::CallbackInfo &);
 
   rtc::scoped_refptr<RTCVideoTrackSource> _source;
+  OwnedWrap<MediaStreamTrack> _track_wrap;
 };
 
 } // namespace node_webrtc

@@ -14,6 +14,8 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/converters/napi.hh"
+#include "src/interfaces/rtc_rtp_receiver.hh"
+#include "src/interfaces/rtc_rtp_sender.hh"
 #include "src/node/async_object_wrap.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
@@ -59,6 +61,8 @@ private:
 
   RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::RtpTransceiverInterface> _transceiver;
+  OwnedWrap<RTCRtpSender> _sender_wrap;
+  OwnedWrap<RTCRtpReceiver> _receiver_wrap;
 };
 
 DECLARE_TO_NAPI(RTCRtpTransceiver *)

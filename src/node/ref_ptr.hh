@@ -14,6 +14,9 @@ namespace node_webrtc {
  *
  * The underlying value is `Ref()`ed when this is created, and `Unref()`ed when
  * this is destroyed.
+ *
+ * We don't provide a `WeakRefPtr` class, because that is effectively just
+ * a regular pointer type.
  */
 template <typename T> class RefPtr {
 public:

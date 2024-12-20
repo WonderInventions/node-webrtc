@@ -17,7 +17,9 @@
 #include <webrtc/pc/local_audio_source.h>
 
 #include "src/dictionaries/node_webrtc/rtc_on_data_event_dict.hh"
+#include "src/interfaces/media_stream_track.hh"
 #include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/node/wrap.hh"
 
 namespace node_webrtc {
 
@@ -89,6 +91,7 @@ private:
   Napi::Value OnData(const Napi::CallbackInfo &);
 
   rtc::scoped_refptr<RTCAudioTrackSource> _source;
+  OwnedWrap<MediaStreamTrack> _track_wrap;
 };
 
 } // namespace node_webrtc

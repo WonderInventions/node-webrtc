@@ -67,7 +67,7 @@ Napi::Value RTCVideoSource::CreateTrack(const Napi::CallbackInfo &) {
   auto factory = PeerConnectionFactory::GetOrCreateDefault();
   auto track =
       factory->factory()->CreateVideoTrack(rtc::CreateRandomUuid(), _source);
-  return MediaStreamTrack::wrap()->GetOrCreate(factory, track)->Value();
+  return _track_wrap.GetOrCreate(factory, track)->Value();
 }
 
 Napi::Value RTCVideoSource::OnFrame(const Napi::CallbackInfo &info) {

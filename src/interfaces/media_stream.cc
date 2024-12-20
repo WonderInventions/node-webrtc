@@ -7,6 +7,8 @@
  */
 #include "src/interfaces/media_stream.hh"
 
+#include <algorithm>
+#include <iterator>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 
@@ -130,12 +132,21 @@ MediaStream::MediaStream(const Napi::CallbackInfo &info)
         // 3. Local MediaStream, existing MediaStream
         auto existingStream = either3.UnsafeFromLeft();
         auto factory = existingStream->_impl._factory;
-        auto tracks = std::vector<MediaStreamTrack *>();
+        // NOTE(jack): we need to keep these as RefPtr so they don't get
+        // garbage-collected in the middle of constructing them all
+        std::vector<RefPtr<MediaStreamTrack>> tracks;
         for (auto const &track : existingStream->tracks()) {
-          tracks.push_back(
+          tracks.emplace_back(
               MediaStreamTrack::wrap()->GetOrCreate(factory, track));
         }
-        _impl = MediaStream::Impl(std::move(tracks), factory);
+        // Now that they are all created and inside RefPtrs, the tracks will
+        // live until the end of this block. So it's safe to convert them back
+        // into pointers and call the _impl constructor
+        std::vector<MediaStreamTrack *> raw_tracks;
+        std::transform(tracks.begin(), tracks.end(),
+                       std::back_inserter(raw_tracks),
+                       [](auto track) -> auto { return track; });
+        _impl = MediaStream::Impl(std::move(raw_tracks), factory);
       } else {
         // Check if RTCMediaStreamInit was provided
         auto maybeMediaStreamInit = either3.UnsafeFromRight();
@@ -166,8 +177,7 @@ Napi::Value MediaStream::GetId(const Napi::CallbackInfo &info) {
 Napi::Value MediaStream::GetActive(const Napi::CallbackInfo &info) {
   auto active = false;
   for (auto const &track : tracks()) {
-    auto mediaStreamTrack =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, track);
+    auto mediaStreamTrack = _track_wrap.GetOrCreate(_impl._factory, track);
     active = active || mediaStreamTrack->active();
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), active, result, Napi::Value)
@@ -177,8 +187,7 @@ Napi::Value MediaStream::GetActive(const Napi::CallbackInfo &info) {
 Napi::Value MediaStream::GetAudioTracks(const Napi::CallbackInfo &info) {
   auto tracks = std::vector<MediaStreamTrack *>();
   for (auto const &track : _impl._stream->GetAudioTracks()) {
-    auto mediaStreamTrack =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, track);
+    auto mediaStreamTrack = _track_wrap.GetOrCreate(_impl._factory, track);
     tracks.push_back(mediaStreamTrack);
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), tracks, result, Napi::Value)
@@ -188,8 +197,7 @@ Napi::Value MediaStream::GetAudioTracks(const Napi::CallbackInfo &info) {
 Napi::Value MediaStream::GetVideoTracks(const Napi::CallbackInfo &info) {
   auto tracks = std::vector<MediaStreamTrack *>();
   for (auto const &track : _impl._stream->GetVideoTracks()) {
-    auto mediaStreamTrack =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, track);
+    auto mediaStreamTrack = _track_wrap.GetOrCreate(_impl._factory, track);
     tracks.push_back(mediaStreamTrack);
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), tracks, result, Napi::Value)
@@ -199,8 +207,7 @@ Napi::Value MediaStream::GetVideoTracks(const Napi::CallbackInfo &info) {
 Napi::Value MediaStream::GetTracks(const Napi::CallbackInfo &info) {
   auto tracks = std::vector<MediaStreamTrack *>();
   for (auto const &track : this->tracks()) {
-    auto mediaStreamTrack =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, track);
+    auto mediaStreamTrack = _track_wrap.GetOrCreate(_impl._factory, track);
     tracks.push_back(mediaStreamTrack);
   }
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), tracks, result, Napi::Value)
@@ -211,15 +218,13 @@ Napi::Value MediaStream::GetTrackById(const Napi::CallbackInfo &info) {
   CONVERT_ARGS_OR_THROW_AND_RETURN_NAPI(info, label, std::string)
   auto audioTrack = _impl._stream->FindAudioTrack(label);
   if (audioTrack) {
-    auto track =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, audioTrack);
+    auto track = _track_wrap.GetOrCreate(_impl._factory, audioTrack);
     CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track, result, Napi::Value)
     return result;
   }
   auto videoTrack = _impl._stream->FindVideoTrack(label);
   if (videoTrack) {
-    auto track =
-        MediaStreamTrack::wrap()->GetOrCreate(_impl._factory, videoTrack);
+    auto track = _track_wrap.GetOrCreate(_impl._factory, videoTrack);
     CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track, result, Napi::Value)
     return result;
   }
@@ -245,6 +250,8 @@ Napi::Value MediaStream::RemoveTrack(const Napi::CallbackInfo &info) {
   auto stream = _impl._stream;
   auto track = mediaStreamTrack->track();
   if (track->kind() == track->kAudioKind) {
+    // TODO(jack): also make these remove from the _track_wrap, so we don't keep
+    // around old tracks
     stream->RemoveTrack(
         static_cast<webrtc::AudioTrackInterface *>(track.get()));
   } else {
@@ -272,8 +279,8 @@ Napi::Value MediaStream::Clone(const Napi::CallbackInfo &info) {
       clonedStream->AddTrack(clonedTrack);
     }
   }
-  auto mediaStream =
-      MediaStream::wrap()->GetOrCreate(_impl._factory, clonedStream);
+  auto mediaStream = RefPtr<MediaStream>(
+      MediaStream::wrap()->GetOrCreate(_impl._factory, clonedStream));
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), mediaStream, result, Napi::Value)
   return result;
 }

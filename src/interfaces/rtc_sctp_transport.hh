@@ -13,6 +13,7 @@
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/api/sctp_transport_interface.h>
 
+#include "src/interfaces/rtc_dtls_transport.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
@@ -59,6 +60,8 @@ private:
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> _dtls_transport;
   RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::SctpTransportInterface> _transport;
+
+  OwnedWrap<RTCDtlsTransport> _transport_wrap;
 };
 
 } // namespace node_webrtc

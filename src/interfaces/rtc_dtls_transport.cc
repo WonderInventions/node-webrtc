@@ -75,7 +75,7 @@ RTCDtlsTransport::RTCDtlsTransport(const Napi::CallbackInfo &info)
   _transport = std::move(transport);
 
   // NOTE(mroberts): Ensure we create this.
-  RTCIceTransport::wrap()->GetOrCreate(_factory, _transport->ice_transport());
+  _transport_wrap.GetOrCreate(_factory, _transport->ice_transport());
 
   _factory->WorkerThread()->Invoke<void>(RTC_FROM_HERE, [this]() {
     _transport->RegisterObserver(this);
@@ -96,8 +96,7 @@ RTCDtlsTransport::~RTCDtlsTransport() {
 
 void RTCDtlsTransport::Stop() {
   _transport->UnregisterObserver();
-  auto ice_transport =
-      RTCIceTransport::wrap()->Get(_transport->ice_transport());
+  auto ice_transport = _transport_wrap.Get(_transport->ice_transport());
   if (ice_transport) {
     ice_transport->OnRTCDtlsTransportStopped();
   }
@@ -145,8 +144,7 @@ void RTCDtlsTransport::OnError(webrtc::RTCError rtcError) {
 }
 
 Napi::Value RTCDtlsTransport::GetIceTransport(const Napi::CallbackInfo &) {
-  return RTCIceTransport::wrap()
-      ->GetOrCreate(_factory, _transport->ice_transport())
+  return _transport_wrap.GetOrCreate(_factory, _transport->ice_transport())
       ->Value();
 }
 

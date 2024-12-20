@@ -149,8 +149,9 @@ node_webrtc::GetUserMedia::GetUserMediaImpl(const Napi::CallbackInfo &info) {
     stream->AddTrack(track);
   }
 
-  node_webrtc::Resolve(deferred,
-                       MediaStream::wrap()->GetOrCreate(factory, stream));
+  auto media_stream =
+      RefPtr<MediaStream>(MediaStream::wrap()->GetOrCreate(factory, stream));
+  node_webrtc::Resolve(deferred, media_stream);
   return deferred.Promise();
 }
 

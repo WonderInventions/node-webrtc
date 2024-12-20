@@ -13,6 +13,8 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/converters/napi.hh"
+#include "src/interfaces/media_stream_track.hh"
+#include "src/interfaces/rtc_dtls_transport.hh"
 #include "src/node/async_object_wrap.hh"
 #include "src/node/ref_ptr.hh"
 #include "src/node/wrap.hh"
@@ -65,6 +67,8 @@ private:
 
   RefPtr<PeerConnectionFactory> _factory;
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> _receiver;
+  OwnedWrap<MediaStreamTrack> _track_wrap;
+  OwnedWrap<RTCDtlsTransport> _transport_wrap;
 };
 
 DECLARE_TO_AND_FROM_NAPI(RTCRtpReceiver *)

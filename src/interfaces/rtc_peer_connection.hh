@@ -15,8 +15,15 @@
 
 #include "src/dictionaries/node_webrtc/extended_rtc_configuration.hh"
 #include "src/dictionaries/node_webrtc/rtc_session_description_init.hh"
+#include "src/interfaces/media_stream.hh"
+#include "src/interfaces/rtc_data_channel.hh"
+#include "src/interfaces/rtc_rtp_receiver.hh"
+#include "src/interfaces/rtc_rtp_sender.hh"
+#include "src/interfaces/rtc_rtp_transceiver.hh"
+#include "src/interfaces/rtc_sctp_transport.hh"
 #include "src/node/async_object_wrap_with_loop.hh"
 #include "src/node/ref_ptr.hh"
+#include "src/node/wrap.hh"
 
 namespace webrtc {
 
@@ -30,7 +37,6 @@ class RtpTransceiverInterface;
 
 namespace node_webrtc {
 
-class RTCDataChannel;
 class PeerConnectionFactory;
 
 class RTCPeerConnection : public AsyncObjectWrapWithLoop<RTCPeerConnection>,
@@ -131,7 +137,13 @@ private:
   PeerConnectionFactory *_factory;
   bool _shouldReleaseFactory;
 
-  std::vector<RefPtr<RTCDataChannel>> _channels;
+  std::vector<RTCDataChannel *> _channels;
+  OwnedWrap<RTCDataChannel> _data_channel_wrap;
+  OwnedWrap<MediaStream> _stream_wrap;
+  OwnedWrap<RTCRtpReceiver> _receiver_wrap;
+  OwnedWrap<RTCRtpTransceiver> _transceiver_wrap;
+  OwnedWrap<RTCRtpSender> _sender_wrap;
+  OwnedWrap<RTCSctpTransport> _transport_wrap;
 };
 
 } // namespace node_webrtc

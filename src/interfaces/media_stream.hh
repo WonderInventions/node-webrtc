@@ -14,6 +14,7 @@
 #include <webrtc/api/scoped_refptr.h>
 
 #include "src/converters/napi.hh"
+#include "src/interfaces/media_stream_track.hh"
 #include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/node/async_object_wrap.hh"
 #include "src/node/ref_ptr.hh"
@@ -21,7 +22,6 @@
 
 namespace node_webrtc {
 
-class MediaStreamTrack;
 struct RTCMediaStreamInit;
 
 class MediaStream : public AsyncObjectWrap<MediaStream> {
@@ -95,6 +95,7 @@ private:
   std::vector<rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>> tracks();
 
   Impl _impl;
+  OwnedWrap<MediaStreamTrack> _track_wrap;
 };
 
 DECLARE_TO_AND_FROM_NAPI(MediaStream *)

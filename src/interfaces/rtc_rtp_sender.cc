@@ -58,16 +58,14 @@ Napi::Value RTCRtpSender::GetTrack(const Napi::CallbackInfo &info) {
   Napi::Value result = info.Env().Null();
   auto track = _sender->track();
   if (track) {
-    result = MediaStreamTrack::wrap()->GetOrCreate(_factory, track)->Value();
+    result = _track_wrap.GetOrCreate(_factory, track)->Value();
   }
   return result;
 }
 
 Napi::Value RTCRtpSender::GetTransport(const Napi::CallbackInfo &info) {
   auto transport = _sender->dtls_transport();
-  return transport ? RTCDtlsTransport::wrap()
-                         ->GetOrCreate(_factory, transport)
-                         ->Value()
+  return transport ? _transport_wrap.GetOrCreate(_factory, transport)->Value()
                    : info.Env().Null();
 }
 

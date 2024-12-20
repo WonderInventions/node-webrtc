@@ -33,7 +33,7 @@ Napi::Value RTCAudioSource::CreateTrack(const Napi::CallbackInfo &) {
   auto factory = PeerConnectionFactory::GetOrCreateDefault();
   auto track =
       factory->factory()->CreateAudioTrack(rtc::CreateRandomUuid(), _source);
-  return MediaStreamTrack::wrap()->GetOrCreate(factory, track)->Value();
+  return _track_wrap.GetOrCreate(factory, track)->Value();
 }
 
 Napi::Value RTCAudioSource::OnData(const Napi::CallbackInfo &info) {
