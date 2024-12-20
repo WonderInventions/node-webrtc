@@ -380,11 +380,11 @@ else()
     -fvisibility=hidden
     -Wall
     -Wextra
+    -Wpedantic
     -Wno-missing-field-initializers
     -Wno-uninitialized
     -Wno-unused-local-typedefs
     -Wno-unused-variable
-    -Wpedantic
     "$<$<CONFIG:Debug>:-g>"
   )
 
@@ -431,6 +431,7 @@ else()
       -Weverything
       -Wno-c++98-compat
       -Wno-c++98-compat-pedantic
+      -Wno-covered-switch-default
       -Wno-documentation
       -Wno-exit-time-destructors
       -Wno-float-conversion
@@ -441,6 +442,7 @@ else()
       -Wno-shorten-64-to-32
       -Wno-sign-conversion
       -Wno-thread-safety-negative
+      -Wno-unsafe-buffer-usage
       -Wno-unused-template
       -Wno-weak-vtables
     )

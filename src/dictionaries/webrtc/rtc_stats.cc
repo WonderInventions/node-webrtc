@@ -20,8 +20,9 @@ TO_NAPI_IMPL(const webrtc::RTCStats *, pair) {
   auto value = pair.second;
   NODE_WEBRTC_CREATE_OBJECT_OR_RETURN(env, stats)
   NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, stats, "id", value->id())
-  NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, stats, "timestamp",
-                                        value->timestamp_us() / 1000.0)
+  NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(
+      env, stats, "timestamp",
+      static_cast<double>(value->timestamp_us()) / 1000.0)
   NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, stats, "type",
                                         std::string(value->type()))
   for (const webrtc::RTCStatsMemberInterface *member : value->Members()) {

@@ -15,21 +15,20 @@ namespace node_webrtc {
 
 class SomeError {
 public:
-  SomeError() = default;
-
   explicit SomeError(const std::string &message)
       : SomeError(message, MakeRight<ErrorFactory::DOMExceptionName>(
                                ErrorFactory::kError)) {}
 
   SomeError(
-      const std::string &message,
+      std::string message,
       const Either<ErrorFactory::DOMExceptionName, ErrorFactory::ErrorName>
           name)
       : _message(std::move(message)), _name(name) {}
 
-  std::string message() const { return _message; }
+  [[nodiscard]] std::string message() const { return _message; }
 
-  Either<ErrorFactory::DOMExceptionName, ErrorFactory::ErrorName> name() const {
+  [[nodiscard]] Either<ErrorFactory::DOMExceptionName, ErrorFactory::ErrorName>
+  name() const {
     return _name;
   }
 

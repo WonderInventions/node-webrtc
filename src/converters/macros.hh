@@ -11,14 +11,12 @@
 #define COMMA ,
 #endif // COMMA
 
-namespace node_webrtc {
-namespace detail {
+namespace node_webrtc::detail {
 
 // https://stackoverflow.com/a/13842784
 template <typename T> struct argument_type;
 template <typename T, typename U> struct argument_type<T(U)> {
-  typedef U type;
+  using type = U;
 };
 
-} // namespace detail
-} // namespace node_webrtc
+} // namespace node_webrtc::detail

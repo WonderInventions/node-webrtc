@@ -17,7 +17,7 @@ namespace node_webrtc {
     return Validation<Napi::Value>::Invalid(                                   \
         NODE_WEBRTC_UNIQUE_NAME(O).ToErrors());                                \
   }                                                                            \
-  auto O = NODE_WEBRTC_UNIQUE_NAME(O).UnsafeFromValid();
+  auto O = NODE_WEBRTC_UNIQUE_NAME(O).UnsafeFromValid(); // NOLINT
 
 #define NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(E, O, K, V)                      \
   {                                                                            \

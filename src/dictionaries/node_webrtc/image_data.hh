@@ -21,8 +21,8 @@ public:
     return {width, height, contents};
   }
 
-  Validation<I420ImageData> toI420() const;
-  Validation<RgbaImageData> toRgba() const;
+  [[nodiscard]] Validation<I420ImageData> toI420() const;
+  [[nodiscard]] Validation<RgbaImageData> toRgba() const;
 };
 
 class I420ImageData {
@@ -31,27 +31,29 @@ public:
 
   static Validation<I420ImageData> Create(ImageData imageData);
 
-  size_t sizeOfLuminancePlane() const {
-    return static_cast<size_t>(width() * height());
+  [[nodiscard]] size_t sizeOfLuminancePlane() const {
+    return static_cast<size_t>(width()) * height();
   }
 
-  size_t sizeOfChromaPlane() const { return sizeOfLuminancePlane() / 4; }
+  [[nodiscard]] size_t sizeOfChromaPlane() const {
+    return sizeOfLuminancePlane() / 4;
+  }
 
   uint8_t *dataY() { return static_cast<uint8_t *>(data.contents.Data()); }
 
-  int strideY() const { return width(); }
+  [[nodiscard]] int strideY() const { return width(); }
 
-  uint8_t *dataU() { return dataY() + sizeOfLuminancePlane(); }
+  uint8_t *dataU() { return &dataY()[sizeOfLuminancePlane()]; }
 
-  int strideU() const { return width() / 2; }
+  [[nodiscard]] int strideU() const { return width() / 2; }
 
-  uint8_t *dataV() { return dataU() + sizeOfChromaPlane(); }
+  uint8_t *dataV() { return &dataU()[sizeOfChromaPlane()]; }
 
-  int strideV() const { return strideU(); }
+  [[nodiscard]] int strideV() const { return strideU(); }
 
-  int width() const { return data.width; }
+  [[nodiscard]] int width() const { return data.width; }
 
-  int height() const { return data.height; }
+  [[nodiscard]] int height() const { return data.height; }
 
 private:
   explicit I420ImageData(const ImageData data) : data(data) {}
@@ -67,11 +69,11 @@ public:
 
   uint8_t *dataRgba() { return static_cast<uint8_t *>(data.contents.Data()); }
 
-  int strideRgba() const { return width() * 4; }
+  [[nodiscard]] int strideRgba() const { return width() * 4; }
 
-  int width() const { return data.width; }
+  [[nodiscard]] int width() const { return data.width; }
 
-  int height() const { return data.height; }
+  [[nodiscard]] int height() const { return data.height; }
 
 private:
   explicit RgbaImageData(const ImageData data) : data(data) {}

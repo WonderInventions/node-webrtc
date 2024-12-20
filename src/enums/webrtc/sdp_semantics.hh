@@ -10,6 +10,11 @@
   ENUM_SUPPORTED(SDP_SEMANTICS::kPlanB, "plan-b")                              \
   ENUM_SUPPORTED(SDP_SEMANTICS::kUnifiedPlan, "unified-plan")
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #define ENUM(X) SDP_SEMANTICS##X
 #include "src/enums/macros/decls.hh"
 #undef ENUM
+
+#pragma clang diagnostic pop

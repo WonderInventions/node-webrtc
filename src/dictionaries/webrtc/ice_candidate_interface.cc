@@ -29,9 +29,10 @@ ICE_CANDIDATE_INTERFACE_FN(const std::string &candidate,
                            const std::string &sdpMid, const int sdpMLineIndex,
                            const Maybe<std::string> &) {
   webrtc::SdpParseError error;
-  auto candidate_ = webrtc::CreateIceCandidate(
-      sdpMid, sdpMLineIndex, candidate,
-      &error); // NOLINT(readability-suspicious-call-argument)
+  // NOLINTBEGIN(readability-suspicious-call-argument)
+  auto candidate_ =
+      webrtc::CreateIceCandidate(sdpMid, sdpMLineIndex, candidate, &error);
+  // NOLINTEND(readability-suspicious-call-argument)
   if (!candidate_) {
     return Validation<webrtc::IceCandidateInterface *>::Invalid(
         error.description);
@@ -46,8 +47,8 @@ FROM_NAPI_IMPL(std::shared_ptr<webrtc::IceCandidateInterface>, napi_value) {
       });
 }
 
-TO_NAPI_IMPL(webrtc::IceCandidateInterface *,
-             pair) { // NOLINT(readability-function-cognitive-complexity)
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+TO_NAPI_IMPL(webrtc::IceCandidateInterface *, pair) {
   auto env = pair.first;
   Napi::EscapableHandleScope scope(env);
 
@@ -69,13 +70,16 @@ TO_NAPI_IMPL(webrtc::IceCandidateInterface *,
 
   const auto &candidate_type = candidate.type();
   auto type = RTCIceCandidateType::kHost;
-  if (candidate_type == (const char *)cricket::LOCAL_PORT_TYPE) {
+  if (candidate_type == static_cast<const char *>(cricket::LOCAL_PORT_TYPE)) {
     type = RTCIceCandidateType::kHost;
-  } else if (candidate_type == (const char *)cricket::STUN_PORT_TYPE) {
+  } else if (candidate_type ==
+             static_cast<const char *>(cricket::STUN_PORT_TYPE)) {
     type = RTCIceCandidateType::kSrflx;
-  } else if (candidate_type == (const char *)cricket::RELAY_PORT_TYPE) {
+  } else if (candidate_type ==
+             static_cast<const char *>(cricket::RELAY_PORT_TYPE)) {
     type = RTCIceCandidateType::kRelay;
-  } else if (candidate_type == (const char *)cricket::PRFLX_PORT_TYPE) {
+  } else if (candidate_type ==
+             static_cast<const char *>(cricket::PRFLX_PORT_TYPE)) {
     type = RTCIceCandidateType::kPrflx;
   }
 
@@ -134,6 +138,7 @@ TO_NAPI_IMPL(webrtc::IceCandidateInterface *,
 
   return Pure(scope.Escape(object));
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace node_webrtc
 

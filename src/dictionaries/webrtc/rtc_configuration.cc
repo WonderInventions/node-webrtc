@@ -1,5 +1,8 @@
+#if defined(_WIN32)
 // Needed for std::getenv on Windows
 #define _CRT_SECURE_NO_WARNINGS // NOLINT(bugprone-reserved-identifier)
+#endif
+
 #include "src/dictionaries/webrtc/rtc_configuration.hh"
 
 #include "src/converters.hh"
