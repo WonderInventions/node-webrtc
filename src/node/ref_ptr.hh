@@ -7,6 +7,7 @@
  */
 #pragma once
 
+#include <cstddef>
 namespace node_webrtc {
 
 /**
@@ -28,6 +29,8 @@ public:
   // NOTE(jack): I'd like it to be impossible to make an invalid one of these.
   // Unfortunately, due to Reasons, we must provide a default constructor.
   RefPtr() : _ptr(nullptr) {}
+  // ... and a nullptr_t constructor
+  RefPtr(std::nullptr_t) : _ptr(nullptr) {}
 
   // Allow assignment from a raw pointer, as an alternate copy constructor
   RefPtr &operator=(T *ptr) {
@@ -44,8 +47,9 @@ public:
     }
     return *this;
   }
-  // Allow implicit conversion to a raw pointer
+  // Allow implicit and explicit conversion to a raw pointer
   operator T *() const { return _ptr; }
+  T *ptr() const { return _ptr; }
 
   // Allow access to inner fields thru the pointer
   T *operator->() { return _ptr; }

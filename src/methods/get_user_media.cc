@@ -12,8 +12,6 @@
 
 #include "src/converters.hh"
 #include "src/converters/arguments.hh"
-#include "src/converters/interfaces.hh"
-#include "src/converters/napi.hh"
 #include "src/converters/object.hh"
 #include "src/functional/curry.hh"
 #include "src/functional/either.hh"
@@ -23,7 +21,6 @@
 #include "src/interfaces/media_stream.hh"
 #include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
 #include "src/interfaces/rtc_video_source.hh"
-#include "src/node/events.hh"
 #include "src/node/utility.hh"
 
 // TODO(mroberts): Expand support for other members.
@@ -151,7 +148,9 @@ node_webrtc::GetUserMedia::GetUserMediaImpl(const Napi::CallbackInfo &info) {
 
   auto media_stream =
       RefPtr<MediaStream>(MediaStream::wrap()->GetOrCreate(factory, stream));
-  node_webrtc::Resolve(deferred, media_stream);
+  // TODO(jack): this may end up being the wrong lifetime, if Resolve can't
+  // automatically Ref it...
+  node_webrtc::Resolve(deferred, media_stream.ptr());
   return deferred.Promise();
 }
 

@@ -19,7 +19,7 @@
         {
           devShells.default =
             let
-              apple-sdk = pkgs.apple-sdk;
+              apple-sdk = pkgs.apple-sdk_12;
               clang = pkgs.llvmPackages_14.clang;
               clang-tools = pkgs.llvmPackages_14.clang-tools;
             in
@@ -27,15 +27,13 @@
               nativeBuildInputs =
                 (with pkgs; [
                   cmake
-                  darwin.apple_sdk.frameworks.AVFoundation
-                  darwin.apple_sdk.frameworks.AppKit
-                  darwin.apple_sdk.frameworks.Foundation
                   ninja
                   nodejs_20
                   pkg-config
                   zlib
                 ])
                 ++ [
+                  apple-sdk
                   clang
                   clang-tools
                 ];

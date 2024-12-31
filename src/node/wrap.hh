@@ -22,7 +22,8 @@ namespace node_webrtc {
  */
 template <typename T, typename U, typename... V> class OwnedWrapImpl {
 private:
-  using Output = RefPtr<std::remove_pointer_t<T>>;
+  using BaseT = std::remove_pointer_t<T>;
+  using Output = RefPtr<BaseT>;
 
 public:
   OwnedWrapImpl() = default;
@@ -33,8 +34,8 @@ public:
   OwnedWrapImpl &operator=(OwnedWrapImpl &&) = delete;
 
   Output GetOrCreate(V... args, U key) {
-    return _map.computeIfAbsent(key, [this, key, args...]() {
-      auto out = T::wrap()->GetOrCreate(args..., key);
+    return _map.computeIfAbsent(key, [key, args...]() {
+      auto out = BaseT::wrap()->GetOrCreate(args..., key);
       return Output(out);
     });
   }

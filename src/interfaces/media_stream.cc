@@ -143,9 +143,9 @@ MediaStream::MediaStream(const Napi::CallbackInfo &info)
         // live until the end of this block. So it's safe to convert them back
         // into pointers and call the _impl constructor
         std::vector<MediaStreamTrack *> raw_tracks;
-        std::transform(tracks.begin(), tracks.end(),
-                       std::back_inserter(raw_tracks),
-                       [](auto track) -> auto { return track; });
+        std::transform(
+            tracks.begin(), tracks.end(), std::back_inserter(raw_tracks),
+            [](auto track) -> auto{ return track; });
         _impl = MediaStream::Impl(std::move(raw_tracks), factory);
       } else {
         // Check if RTCMediaStreamInit was provided
@@ -219,13 +219,15 @@ Napi::Value MediaStream::GetTrackById(const Napi::CallbackInfo &info) {
   auto audioTrack = _impl._stream->FindAudioTrack(label);
   if (audioTrack) {
     auto track = _track_wrap.GetOrCreate(_impl._factory, audioTrack);
-    CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track, result, Napi::Value)
+    CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track.ptr(), result,
+                                     Napi::Value)
     return result;
   }
   auto videoTrack = _impl._stream->FindVideoTrack(label);
   if (videoTrack) {
     auto track = _track_wrap.GetOrCreate(_impl._factory, videoTrack);
-    CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track, result, Napi::Value)
+    CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), track.ptr(), result,
+                                     Napi::Value)
     return result;
   }
   return info.Env().Null();
@@ -281,7 +283,8 @@ Napi::Value MediaStream::Clone(const Napi::CallbackInfo &info) {
   }
   auto mediaStream = RefPtr<MediaStream>(
       MediaStream::wrap()->GetOrCreate(_impl._factory, clonedStream));
-  CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), mediaStream, result, Napi::Value)
+  CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), mediaStream.ptr(), result,
+                                   Napi::Value)
   return result;
 }
 
