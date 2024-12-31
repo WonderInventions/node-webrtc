@@ -14,6 +14,7 @@ build-*
 compile_commands.json
 example
 gcc-arm-*
+nix.gni
 node_modules
 npm-debug.log*
 package-lock.json

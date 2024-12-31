@@ -153,6 +153,7 @@ set_target_properties(libc++abi PROPERTIES IMPORTED_OBJECTS_DEBUG "${libc++abi_o
 # M98: branch-heads/4758
 set(WEBRTC_REVISION branch-heads/4758)
 
+file(STRINGS nix.gni NIX_GN_GEN_ARGS)
 list(APPEND GN_GEN_ARGS
   rtc_build_examples=false
   rtc_use_x11=false
@@ -161,6 +162,7 @@ list(APPEND GN_GEN_ARGS
   rtc_include_tests=false
   use_lld=false
   "target_cpu=\"${TARGET_ARCH}\""
+  "${NIX_GN_GEN_ARGS}"
 )
 
 if (${use_custom_libcxx})
