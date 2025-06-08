@@ -91,6 +91,11 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
       std::unique_ptr<cricket::PortAllocator>(new cricket::BasicPortAllocator(
           _factory->getNetworkManager(), _factory->getSocketFactory()));
   _port_range = configuration.portRange;
+  if (configuration.iceLite) {
+    portAllocator->set_flags(
+    portAllocator->flags() | cricket::PORTALLOCATOR_ENABLE_LITE);
+  }
+
   portAllocator->SetPortRange(_port_range.min.FromMaybe(0),
                               _port_range.max.FromMaybe(65535));
 

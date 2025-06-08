@@ -14,8 +14,9 @@ namespace node_webrtc {
 
 static ExtendedRTCConfiguration CreateExtendedRTCConfiguration(
     const webrtc::PeerConnectionInterface::RTCConfiguration &configuration,
-    const UnsignedShortRange portRange) {
-  return {configuration, portRange};
+    const UnsignedShortRange portRange,
+    const bool iceLite) {
+  return {configuration, portRange, iceLite};
 }
 
 FROM_NAPI_IMPL(ExtendedRTCConfiguration, value) {
@@ -24,7 +25,7 @@ FROM_NAPI_IMPL(ExtendedRTCConfiguration, value) {
         return curry(CreateExtendedRTCConfiguration) %
                From<webrtc::PeerConnectionInterface::RTCConfiguration>(value) *
                GetOptional<UnsignedShortRange>(object, "portRange",
-                                               UnsignedShortRange());
+                                               UnsignedShortRange()) * GetOptional<bool>(object, "iceLite", false);;
       });
 }
 
@@ -32,7 +33,7 @@ static Validation<Napi::Value> ExtendedRTCConfigurationToJavaScript(
     const Napi::Value iceServers, const Napi::Value iceTransportPolicy,
     const Napi::Value bundlePolicy, const Napi::Value rtcpMuxPolicy,
     const Napi::Value iceCandidatePoolSize, const Napi::Value portRange,
-    const Napi::Value sdpSemantics) {
+    const Napi::Value sdpSemantics, const Napi::Value iceLite) {
   auto env = iceServers.Env();
   Napi::EscapableHandleScope scope(iceServers.Env());
   NODE_WEBRTC_CREATE_OBJECT_OR_RETURN(env, object)
@@ -48,6 +49,7 @@ static Validation<Napi::Value> ExtendedRTCConfigurationToJavaScript(
   NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, object, "portRange", portRange)
   NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, object, "sdpSemantics",
                                         sdpSemantics)
+  NODE_WEBRTC_CONVERT_AND_SET_OR_RETURN(env, object, "iceLite", iceLite)
   return Pure(scope.Escape(object));
 }
 
@@ -66,7 +68,8 @@ TO_NAPI_IMPL(ExtendedRTCConfiguration, pair) {
           pair.first, pair.second.configuration.ice_candidate_pool_size)) *
       From<Napi::Value>(std::make_pair(pair.first, pair.second.portRange)) *
       From<Napi::Value>(
-          std::make_pair(pair.first, pair.second.configuration.sdp_semantics)));
+          std::make_pair(pair.first, pair.second.configuration.sdp_semantics))) *
+      From<Napi::Value>(std::make_pair(pair.first, pair.second.iceLite)));
 }
 
 } // namespace node_webrtc

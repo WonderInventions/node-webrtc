@@ -13,6 +13,7 @@
 #include "src/enums/webrtc/ice_role.hh"
 #include "src/enums/webrtc/ice_transport_state.hh"
 #include "src/interfaces/rtc_peer_connection/peer_connection_factory.hh"
+#include "src/converters/ice_parameters.hh"
 
 namespace node_webrtc {
 
