@@ -1,13 +1,12 @@
 #include "src/interfaces/rtc_ice_parameters.hh"
 
-#include "src/converters/arguments.hh" // Argument helpers/macros (same as other interfaces)
-#include "src/node/error_factory.hh" // For consistent error handling
+#include "src/converters/arguments.hh"
+#include "src/node/error_factory.hh"
 
 using namespace node_webrtc;
 
 Napi::FunctionReference RTCIceParameters::_constructor;
 
-/* static */
 void RTCIceParameters::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
@@ -29,7 +28,6 @@ void RTCIceParameters::Init(Napi::Env env, Napi::Object exports) {
   exports.Set("RTCIceParameters", ctor);
 }
 
-/* JS constructor */
 RTCIceParameters::RTCIceParameters(const Napi::CallbackInfo &info)
     : Napi::ObjectWrap<RTCIceParameters>(info) {
   Napi::Env env = info.Env();
@@ -42,7 +40,6 @@ RTCIceParameters::RTCIceParameters(const Napi::CallbackInfo &info)
 
   Napi::Object dict = info[0].As<Napi::Object>();
 
-  /* Pull & validate the fields */
   if (!dict.Has("usernameFragment") || !dict.Has("password")) {
     Napi::TypeError::New(env, "usernameFragment and password are required")
         .ThrowAsJavaScriptException();
@@ -56,7 +53,6 @@ RTCIceParameters::RTCIceParameters(const Napi::CallbackInfo &info)
                  : false;
 }
 
-/* JS getters */
 Napi::Value RTCIceParameters::UsernameFragment(const Napi::CallbackInfo &info) {
   return Napi::String::New(info.Env(), _params.ufrag);
 }

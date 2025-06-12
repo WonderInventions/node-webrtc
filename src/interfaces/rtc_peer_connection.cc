@@ -105,6 +105,16 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
 
   auto deps = webrtc::PeerConnectionDependencies(this);
   deps.allocator = std::move(portAllocator);
+  webrtc::PeerConnectionInterface::RTCConfiguration rtcConfig =
+      configuration.configuration;
+
+  if (configuration.disableFingerprintVerification) {
+    for (auto &s : rtcConfig.servers) {
+      s.tls_cert_policy =
+          webrtc::PeerConnectionInterface::kTlsCertPolicyInsecureNoCheck;
+    }
+  }
+
   auto maybePeerConnection = _factory->factory()->CreatePeerConnectionOrError(
       configuration.configuration, std::move(deps));
 

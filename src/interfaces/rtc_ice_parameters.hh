@@ -5,19 +5,16 @@
 namespace node_webrtc {
 
 class RTCIceParameters : public Napi::ObjectWrap<RTCIceParameters> {
- public:                                   // ←── keep it here
+ public:
   static void Init(Napi::Env, Napi::Object);
 
   explicit RTCIceParameters(const Napi::CallbackInfo&);
 
-  /* expose native struct for converters */
   const cricket::IceParameters& Native() const { return _params; }
 
-  /* ONE declaration only → delete any duplicate farther below */
   static Napi::FunctionReference _constructor;
 
  private:
-  /* JS accessors */
   Napi::Value UsernameFragment(const Napi::CallbackInfo&);
   Napi::Value Password(const Napi::CallbackInfo&);
   Napi::Value IceLite(const Napi::CallbackInfo&);
