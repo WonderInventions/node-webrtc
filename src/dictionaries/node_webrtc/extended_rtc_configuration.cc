@@ -14,8 +14,7 @@ namespace node_webrtc {
 
 static ExtendedRTCConfiguration CreateExtendedRTCConfiguration(
     const webrtc::PeerConnectionInterface::RTCConfiguration &configuration,
-    const UnsignedShortRange portRange,
-    const bool iceLite) {
+    const UnsignedShortRange portRange, const bool iceLite) {
   return {configuration, portRange, iceLite};
 }
 
@@ -25,7 +24,8 @@ FROM_NAPI_IMPL(ExtendedRTCConfiguration, value) {
         return curry(CreateExtendedRTCConfiguration) %
                From<webrtc::PeerConnectionInterface::RTCConfiguration>(value) *
                GetOptional<UnsignedShortRange>(object, "portRange",
-                                               UnsignedShortRange()) * GetOptional<bool>(object, "iceLite", false);;
+                                               UnsignedShortRange()) *
+               GetOptional<bool>(object, "iceLite", false);
       });
 }
 
@@ -68,7 +68,7 @@ TO_NAPI_IMPL(ExtendedRTCConfiguration, pair) {
           pair.first, pair.second.configuration.ice_candidate_pool_size)) *
       From<Napi::Value>(std::make_pair(pair.first, pair.second.portRange)) *
       From<Napi::Value>(
-          std::make_pair(pair.first, pair.second.configuration.sdp_semantics))) *
+          std::make_pair(pair.first, pair.second.configuration.sdp_semantics)) *
       From<Napi::Value>(std::make_pair(pair.first, pair.second.iceLite)));
 }
 

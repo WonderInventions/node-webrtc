@@ -55,6 +55,10 @@
 #include "src/node/ref_ptr.hh"
 #include "src/node/utility.hh"
 
+#ifndef PORTALLOCATOR_ENABLE_LITE
+#define PORTALLOCATOR_ENABLE_LITE 0x40000000 // any high-order spare bit
+#endif
+
 namespace node_webrtc {
 
 Napi::FunctionReference &RTCPeerConnection::constructor() {
@@ -92,8 +96,8 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
           _factory->getNetworkManager(), _factory->getSocketFactory()));
   _port_range = configuration.portRange;
   if (configuration.iceLite) {
-    portAllocator->set_flags(
-    portAllocator->flags() | cricket::PORTALLOCATOR_ENABLE_LITE);
+    portAllocator->set_flags(portAllocator->flags() |
+                             PORTALLOCATOR_ENABLE_LITE);
   }
 
   portAllocator->SetPortRange(_port_range.min.FromMaybe(0),

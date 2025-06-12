@@ -1,38 +1,30 @@
 #pragma once
-
 #include <node-addon-api/napi.h>
-#include <webrtc/api/ice_transport_interface.h>
+#include <webrtc/p2p/base/transport_description.h>
 
 namespace node_webrtc {
 
-/**
- * JS‑visible wrapper around webrtc::IceParameters
- *   new RTCIceParameters({ usernameFragment, password, iceLite })
- */
-class RTCIceParameters
-  : public Napi::ObjectWrap<RTCIceParameters> {
+class RTCIceParameters : public Napi::ObjectWrap<RTCIceParameters> {
+ public:                                   // ←── keep it here
+  static void Init(Napi::Env, Napi::Object);
 
- public:
-  /* Called from binding.cc */
-  static void Init(Napi::Env, Napi::Object exports);
+  explicit RTCIceParameters(const Napi::CallbackInfo&);
 
-  /* JS constructor */
-  explicit RTCIceParameters(const Napi::CallbackInfo& info);
+  /* expose native struct for converters */
+  const cricket::IceParameters& Native() const { return _params; }
 
-  /* C++ getter for native code that needs the struct */
-  const webrtc::IceParameters& native() const { return _params; }
+  /* ONE declaration only → delete any duplicate farther below */
+  static Napi::FunctionReference _constructor;
 
  private:
-  /* JS getters */
-  Napi::Value UsernameFragment(const Napi::CallbackInfo& info);
-  Napi::Value Password(const Napi::CallbackInfo& info);
-  Napi::Value IceLite(const Napi::CallbackInfo& info);
+  /* JS accessors */
+  Napi::Value UsernameFragment(const Napi::CallbackInfo&);
+  Napi::Value Password(const Napi::CallbackInfo&);
+  Napi::Value IceLite(const Napi::CallbackInfo&);
 
-  /* Internal state */
-  webrtc::IceParameters _params;
-
-  /* Cached JS constructor */
-  static Napi::FunctionReference _constructor;
+  /* Stored state ------------------------------------------------------- */
+  cricket::IceParameters _params;
+  bool                   _iceLite = false;
 };
 
-}  // namespace node_webrtc
+}
