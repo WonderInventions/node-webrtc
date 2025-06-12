@@ -27,3 +27,4 @@ require("./rtcvideosink");
 require("./rtcvideosource");
 require("./send-arraybuffer");
 require("./sessiondesc");
+require("./ice-lite");

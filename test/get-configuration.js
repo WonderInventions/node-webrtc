@@ -13,6 +13,7 @@ test("getConfiguration", function (t) {
     iceCandidatePoolSize: 0,
     portRange: {},
     sdpSemantics: "unified-plan",
+    iceLite: false,
   };
 
   t.test("before calling close, with defaults", function (t) {
