@@ -87,6 +87,9 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
 
   auto configuration = maybeConfiguration.FromMaybe(ExtendedRTCConfiguration());
 
+  _ice_lite = configuration.iceLite;
+  _disable_fp_verification = configuration.disableFingerprintVerification;
+
   // TODO(mroberts): Read `factory` (non-standard) from RTCConfiguration?
   _factory = PeerConnectionFactory::GetOrCreateDefault();
   _shouldReleaseFactory = true;
@@ -116,7 +119,7 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
   }
 
   auto maybePeerConnection = _factory->factory()->CreatePeerConnectionOrError(
-      configuration.configuration, std::move(deps));
+      rtcConfig, std::move(deps));
 
   if (!maybePeerConnection.ok()) {
     Napi::Error::New(env, maybePeerConnection.MoveError().message())
@@ -632,7 +635,8 @@ RTCPeerConnection::GetConfiguration(const Napi::CallbackInfo &info) {
   auto configuration =
       _jinglePeerConnection
           ? ExtendedRTCConfiguration(_jinglePeerConnection->GetConfiguration(),
-                                     _port_range)
+                                     _port_range, _ice_lite,
+                                     _disable_fp_verification)
           : _cached_configuration;
   CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), configuration, result,
                                    Napi::Value)
@@ -643,8 +647,13 @@ Napi::Value
 RTCPeerConnection::SetConfiguration(const Napi::CallbackInfo &info) {
   auto env = info.Env();
 
-  CONVERT_ARGS_OR_THROW_AND_RETURN_NAPI(
-      info, configuration, webrtc::PeerConnectionInterface::RTCConfiguration)
+  CONVERT_ARGS_OR_THROW_AND_RETURN_NAPI(info, newExtCfg,
+                                        ExtendedRTCConfiguration)
+
+  _ice_lite = newExtCfg.iceLite;
+  _disable_fp_verification = newExtCfg.disableFingerprintVerification;
+
+  const auto &configuration = newExtCfg.configuration;
 
   if (!_jinglePeerConnection) {
     Napi::Error(env, ErrorFactory::CreateInvalidStateError(
@@ -779,7 +788,8 @@ Napi::Value RTCPeerConnection::UpdateIce(const Napi::CallbackInfo &info) {
 Napi::Value RTCPeerConnection::Close(const Napi::CallbackInfo &info) {
   if (_jinglePeerConnection) {
     _cached_configuration = ExtendedRTCConfiguration(
-        _jinglePeerConnection->GetConfiguration(), _port_range);
+        _jinglePeerConnection->GetConfiguration(), _port_range, _ice_lite,
+        _disable_fp_verification);
     _jinglePeerConnection->Close();
     // NOTE(mroberts): Perhaps another way to do this is to just register all
     // remote MediaStreamTracks against this RTCPeerConnection, not unlike what
