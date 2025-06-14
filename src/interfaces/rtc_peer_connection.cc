@@ -55,6 +55,8 @@
 #include "src/node/ref_ptr.hh"
 #include "src/node/utility.hh"
 
+// node-webrtc shim: PORTALLOCATOR_ENABLE_LITE
+// no official flag
 #ifndef PORTALLOCATOR_ENABLE_LITE
 #define PORTALLOCATOR_ENABLE_LITE 0x40000000 // any high-order spare bit
 #endif
