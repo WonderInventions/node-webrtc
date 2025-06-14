@@ -138,7 +138,6 @@ private:
   bool _shouldReleaseFactory;
 
   bool _ice_lite{false};
-  bool _disable_fp_verification{false};
 
   std::vector<RTCDataChannel *> _channels;
   OwnedWrap<RTCDataChannel> _data_channel_wrap;

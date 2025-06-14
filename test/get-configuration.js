@@ -14,7 +14,6 @@ test("getConfiguration", function (t) {
     portRange: {},
     sdpSemantics: "unified-plan",
     iceLite: false,
-    disableFingerprintVerification: false,
   };
 
   t.test("before calling close, with defaults", function (t) {
@@ -54,7 +53,6 @@ test("getConfiguration", function (t) {
     ["iceCandidatePoolSize", 100], // NOTE(jack): too large values will cause faults on darwin-arm64 due to fd exhaustion; select() can only use fds under 1024, and libwebrtc is not optimized to conserve those.
     ["portRange", { min: 1, max: 2 }],
     ["iceLite", true],
-    ["disableFingerprintVerification", true],
   ].forEach(function (pair) {
     t.test("after setting " + pair[0], function (t) {
       var expectedConfiguration = Object.assign({}, defaultConfiguration);
@@ -139,18 +137,6 @@ test("setConfiguration", function (t) {
   t.test("changing iceLite", function (t) {
     const pc = new RTCPeerConnection();
     const expected = { ...pc.getConfiguration(), iceLite: true };
-    pc.setConfiguration(expected);
-    t.deepEqual(pc.getConfiguration(), expected);
-    pc.close();
-    t.end();
-  });
-
-  t.test("changing disableFingerprintVerification", function (t) {
-    const pc = new RTCPeerConnection();
-    const expected = {
-      ...pc.getConfiguration(),
-      disableFingerprintVerification: true,
-    };
     pc.setConfiguration(expected);
     t.deepEqual(pc.getConfiguration(), expected);
     pc.close();
