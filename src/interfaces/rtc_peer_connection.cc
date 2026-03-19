@@ -777,10 +777,16 @@ Napi::Value RTCPeerConnection::Close(const Napi::CallbackInfo &info) {
   if (_jinglePeerConnection) {
     _cached_configuration = ExtendedRTCConfiguration(
         _jinglePeerConnection->GetConfiguration(), _port_range);
-    _jinglePeerConnection->Close();
-    // NOTE(mroberts): Perhaps another way to do this is to just register all
-    // remote MediaStreamTracks against this RTCPeerConnection, not unlike what
-    // we do with RTCDataChannels.
+
+    // Fire all JS close events proactively, matching Chrome/Blink's approach.
+    // Blink dispatches events synchronously during RTCPeerConnection.close()
+    // rather than relying on the C++ observer callback path. This is necessary
+    // because PeerConnection::Close() calls PrepareForShutdown() which
+    // deactivates the SafeTask safety flag, silently cancelling any pending
+    // async callbacks from the network thread.
+    for (auto channel : _channels) {
+      channel->OnPeerConnectionClosed();
+    }
     if (_jinglePeerConnection->GetConfiguration().sdp_semantics ==
         webrtc::SdpSemantics::kUnifiedPlan) {
       for (const auto &transceiver : _jinglePeerConnection->GetTransceivers()) {
@@ -789,9 +795,7 @@ Napi::Value RTCPeerConnection::Close(const Napi::CallbackInfo &info) {
         track->OnPeerConnectionClosed();
       }
     }
-    for (auto channel : _channels) {
-      channel->OnPeerConnectionClosed();
-    }
+    _jinglePeerConnection->Close();
   }
 
   // Clear the wrap caches before releasing the WebRTC peer connection.
