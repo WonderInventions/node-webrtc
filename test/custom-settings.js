@@ -1,92 +1,107 @@
-/* eslint no-console:0 */
 "use strict";
 
-var tape = require("tape");
-var SimplePeer = require("simple-peer");
-var wrtc = require("..");
+const tape = require("tape");
+const wrtc = require("..");
 
-tape("custom ports connect once", function (t) {
-  t.plan(1);
-  connectClientServer({ min: 9000, max: 9010 }, function (err) {
-    t.error(err, "connectClientServer callback");
+const RTCPeerConnection = wrtc.RTCPeerConnection;
+
+async function connectWithConfig(config) {
+  let resolve;
+  let reject;
+  const done = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
   });
-});
 
-tape("custom ports connect concurrently", function (t) {
-  const n = 2;
+  const pc1 = new RTCPeerConnection({ iceServers: [] });
+  const pc2 = new RTCPeerConnection(Object.assign({ iceServers: [] }, config));
 
-  t.plan(n);
-  const portRange = { min: 9000, max: 9010 };
+  pc1.onicecandidate = function (e) {
+    if (e.candidate) pc2.addIceCandidate(e.candidate);
+  };
 
-  function callback(err) {
+  pc2.onicecandidate = function (e) {
+    if (e.candidate) {
+      if (config.portRange) {
+        const { min, max } = config.portRange;
+        const port = parsePort(e.candidate.candidate);
+        if (port < min || port > max) {
+          pc1.close();
+          pc2.close();
+          reject(
+            new Error(
+              `candidate port ${port} outside range ${min} - ${max}: ${e.candidate.candidate}`,
+            ),
+          );
+          return;
+        }
+      }
+      pc1.addIceCandidate(e.candidate);
+    }
+  };
+
+  const dc = pc1.createDataChannel("test");
+  pc2.ondatachannel = function (evt) {
+    evt.channel.onmessage = function () {
+      pc1.close();
+      pc2.close();
+      resolve();
+    };
+  };
+  dc.onopen = function () {
+    dc.send("hello");
+  };
+
+  try {
+    const offer = await pc1.createOffer();
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(pc1.localDescription);
+    const answer = await pc2.createAnswer();
+    await pc2.setLocalDescription(answer);
+    await pc1.setRemoteDescription(pc2.localDescription);
+  } catch (err) {
+    pc1.close();
+    pc2.close();
+    reject(err);
+  }
+
+  return done;
+}
+
+function parsePort(candidate) {
+  const match = candidate.match(
+    /candidate:\S+\s\d+\s\S+\s\d+\s\S+\s(\d+)\styp/,
+  );
+  return match ? parseInt(match[1], 10) : -1;
+}
+
+tape("custom ports connect once", async function (t) {
+  t.plan(1);
+  try {
+    await connectWithConfig({ portRange: { min: 9000, max: 9010 } });
+
+    t.pass("ConnectClientServer pass");
+  } catch (err) {
     t.error(err, "connectClientServer callback");
   }
+});
+
+tape("custom ports connect concurrently", async function (t) {
+  const n = 2;
+  t.plan(n);
+  let promises = [];
 
   for (let i = 0; i < n; i++) {
-    connectClientServer(portRange, callback);
+    promises.push(
+      connectWithConfig({ portRange: { min: 9000, max: 9010 } })
+        .then(function () {
+          t.pass("connectClientServer pass");
+        })
+        .catch(function (err) {
+          t.error(err, "connectClientServer error");
+        }),
+    );
   }
+
+  await Promise.all(promises);
 });
-
-function connectClientServer(portRange, callback) {
-  const client = new SimplePeer({
-    wrtc: wrtc,
-    initiator: true,
-  });
-
-  const server = new SimplePeer({
-    wrtc: wrtc,
-    initiator: false,
-    config: {
-      portRange: portRange,
-    },
-  });
-
-  client.on("signal", function (data) {
-    server.signal(data);
-  });
-  server.on("signal", function (data) {
-    if (
-      data.candidate &&
-      !isValidCandidate(
-        data.candidate.candidate,
-        portRange || { min: 0, max: 65535 },
-        true,
-      )
-    ) {
-      callback(
-        `candidate must follow port range (${portRange}): ${data.candidate.candidate}`,
-      );
-    }
-    client.signal(data);
-  });
-  server.on("connect", function () {
-    server.send("xyz");
-  });
-  client.on("data", function () {
-    callback();
-    server.destroy();
-    client.destroy();
-  });
-  client.on("error", function (e) {
-    callback(e);
-    server.destroy();
-    client.destroy();
-  });
-  server.on("error", function (e) {
-    callback(e);
-    client.destroy();
-    server.destroy();
-  });
-}
-
-function isValidCandidate(candidate, portRange) {
-  const port = candidate.replace(
-    /candidate:([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s([0-9]+)\styp.*/,
-    "$6",
-  );
-
-  const minPort = portRange.min;
-  const maxPort = portRange.max;
-
-  return minPort <= parseInt(port) && maxPort >= parseInt(port);
-}
