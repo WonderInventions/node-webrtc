@@ -261,6 +261,7 @@ else()
     ${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_encoder_factory.a
     ${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_decoder_factory.a
     ${libwebrtc_binary_dir}/obj/media/librtc_internal_video_codecs.a
+    ${libwebrtc_binary_dir}/obj/media/librtc_simulcast_encoder_adapter.a
   )
 endif()
 
@@ -321,6 +322,10 @@ set_property(TARGET libbuiltin_video_decoder_factory PROPERTY IMPORTED_LOCATION 
 add_library(librtc_internal_video_codecs STATIC IMPORTED)
 add_dependencies(librtc_internal_video_codecs project_libwebrtc)
 set_property(TARGET librtc_internal_video_codecs PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/media/librtc_internal_video_codecs.a")
+
+add_library(librtc_simulcast_encoder_adapter STATIC IMPORTED)
+add_dependencies(librtc_simulcast_encoder_adapter project_libwebrtc)
+set_property(TARGET librtc_simulcast_encoder_adapter PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/media/librtc_simulcast_encoder_adapter.a")
 
 set(libc++_include_dir
   "${libwebrtc_source_dir}/src/buildtools/third_party/libc++/trunk/include"
@@ -404,6 +409,7 @@ target_link_libraries(${MODULE} PRIVATE
   libbuiltin_video_encoder_factory
   libbuiltin_video_decoder_factory
   librtc_internal_video_codecs
+  librtc_simulcast_encoder_adapter
   ${CMAKE_JS_LIB}
 )
 
