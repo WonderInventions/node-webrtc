@@ -62,6 +62,7 @@ public:
   static void Dispose();
 
 private:
+  std::unique_ptr<rtc::Thread> _networkThread;
   std::unique_ptr<rtc::Thread> _signalingThread;
   std::unique_ptr<rtc::Thread> _workerThread;
 

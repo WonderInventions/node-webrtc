@@ -52,10 +52,22 @@ PeerConnectionFactory::PeerConnectionFactory(const Napi::CallbackInfo &info)
   // TODO(mroberts): Read `audioLayer` from some PeerConnectionFactoryOptions?
   auto audioLayer = MakeNothing<webrtc::AudioDeviceModule::AudioLayer>();
 
-  _workerThread = rtc::Thread::CreateWithSocketServer();
-  assert(_workerThread);
+  _networkThread = rtc::Thread::CreateWithSocketServer();
+  assert(_networkThread);
 
   bool result =
+      _networkThread->SetName("PeerConnectionFactory:networkThread", nullptr);
+  assert(result);
+  (void)result;
+
+  result = _networkThread->Start();
+  assert(result);
+  (void)result;
+
+  _workerThread = rtc::Thread::Create();
+  assert(_workerThread);
+
+  result =
       _workerThread->SetName("PeerConnectionFactory:workerThread", nullptr);
   assert(result);
   (void)result;
@@ -93,7 +105,7 @@ PeerConnectionFactory::PeerConnectionFactory(const Napi::CallbackInfo &info)
   (void)result;
 
   _factory = webrtc::CreatePeerConnectionFactory(
-      _workerThread.get(), _workerThread.get(), _signalingThread.get(),
+      _networkThread.get(), _workerThread.get(), _signalingThread.get(),
       _audioDeviceModule, webrtc::CreateBuiltinAudioEncoderFactory(),
       webrtc::CreateBuiltinAudioDecoderFactory(),
       webrtc::CreateBuiltinVideoEncoderFactory(),
@@ -105,11 +117,11 @@ PeerConnectionFactory::PeerConnectionFactory(const Napi::CallbackInfo &info)
   _factory->SetOptions(options);
 
   _networkManager = std::unique_ptr<rtc::NetworkManager>(
-      new rtc::BasicNetworkManager(_workerThread->socketserver()));
+      new rtc::BasicNetworkManager(_networkThread->socketserver()));
   assert(_networkManager != nullptr);
 
   _socketFactory = std::unique_ptr<rtc::PacketSocketFactory>(
-      new rtc::BasicPacketSocketFactory(_workerThread->socketserver()));
+      new rtc::BasicPacketSocketFactory(_networkThread->socketserver()));
   assert(_socketFactory != nullptr);
 }
 
@@ -118,9 +130,11 @@ PeerConnectionFactory::~PeerConnectionFactory() {
 
   _workerThread->BlockingCall([this]() { this->_audioDeviceModule = nullptr; });
 
+  _networkThread->Stop();
   _workerThread->Stop();
   _signalingThread->Stop();
 
+  _networkThread = nullptr;
   _workerThread = nullptr;
   _signalingThread = nullptr;
 
