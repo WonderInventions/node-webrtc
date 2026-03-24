@@ -938,12 +938,13 @@ RTCPeerConnection::GetPendingRemoteDescription(const Napi::CallbackInfo &info) {
 }
 
 Napi::Value RTCPeerConnection::GetSctp(const Napi::CallbackInfo &info) {
-  return _jinglePeerConnection && _jinglePeerConnection->GetSctpTransport()
-             ? _transport_wrap
-                   .GetOrCreate(_factory,
-                                _jinglePeerConnection->GetSctpTransport())
-                   ->Value()
-             : info.Env().Null();
+  auto transport = _jinglePeerConnection
+                       ? _factory->NetworkThread()->BlockingCall([this]() {
+                           return _jinglePeerConnection->GetSctpTransport();
+                         })
+                       : nullptr;
+  return transport ? _transport_wrap.GetOrCreate(_factory, transport)->Value()
+                   : info.Env().Null();
 }
 
 Napi::Value

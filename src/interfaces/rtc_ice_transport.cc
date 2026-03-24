@@ -38,7 +38,7 @@ RTCIceTransport::RTCIceTransport(const Napi::CallbackInfo &info)
 
   _transport = std::move(transport);
 
-  _factory->WorkerThread()->BlockingCall([this]() {
+  _factory->NetworkThread()->BlockingCall([this]() {
     auto internal = _transport->internal();
     if (internal) {
       internal->SignalIceTransportStateChanged.connect(
