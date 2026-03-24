@@ -47,6 +47,8 @@ public:
     return _factory;
   }
 
+  std::unique_ptr<rtc::Thread> &NetworkThread() { return _networkThread; }
+
   std::unique_ptr<rtc::Thread> &SignalingThread() { return _signalingThread; }
 
   std::unique_ptr<rtc::Thread> &WorkerThread() { return _workerThread; }
