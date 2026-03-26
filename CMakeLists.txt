@@ -416,11 +416,11 @@ target_include_directories(${MODULE} PRIVATE
 target_link_libraries(${MODULE} PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
   libpeerconnection
-  libwebrtc
   libbuiltin_video_encoder_factory
   libbuiltin_video_decoder_factory
   librtc_internal_video_codecs
   librtc_simulcast_encoder_adapter
+  libwebrtc
   ${CMAKE_JS_LIB}
 )
 
