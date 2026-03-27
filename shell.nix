@@ -23,6 +23,8 @@ let
         nativeBuildInputs =
           (with pkgs; [
             cmake
+            curl
+            git
             ninja
             nodejs_24
             pkg-config

@@ -76,7 +76,7 @@ RTCDtlsTransport::RTCDtlsTransport(const Napi::CallbackInfo &info)
   // NOTE(mroberts): Ensure we create this.
   _transport_wrap.GetOrCreate(_factory, _transport->ice_transport());
 
-  _factory->WorkerThread()->BlockingCall([this]() {
+  _factory->NetworkThread()->BlockingCall([this]() {
     _transport->RegisterObserver(this);
     auto information = _transport->Information();
     _state = information.state();
@@ -94,7 +94,12 @@ RTCDtlsTransport::~RTCDtlsTransport() {
 }
 
 void RTCDtlsTransport::Stop() {
-  _transport->UnregisterObserver();
+  if (_factory->NetworkThread()->IsCurrent()) {
+    _transport->UnregisterObserver();
+  } else {
+    _factory->NetworkThread()->BlockingCall(
+        [this]() { _transport->UnregisterObserver(); });
+  }
   auto ice_transport = _transport_wrap.Get(_transport->ice_transport());
   if (ice_transport) {
     ice_transport->OnRTCDtlsTransportStopped();

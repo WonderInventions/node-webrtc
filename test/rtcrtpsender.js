@@ -140,9 +140,9 @@ tape(
       return pc.createOffer().then(function (offer) {
         t.equal(
           (offer.sdp.match(/a=msid:/g) || []).length,
-          6,
-          "even duplicates get added",
-        ); // 3 streams per track and 2 tracks (audio + video) = 6 msid lines
+          4,
+          "duplicates are deduplicated",
+        ); // 2 unique stream IDs per track × 2 tracks (audio + video) = 4 msid lines
         pc.close();
         t.end();
       });

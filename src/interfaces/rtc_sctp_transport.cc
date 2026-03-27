@@ -38,7 +38,7 @@ RTCSctpTransport::RTCSctpTransport(const Napi::CallbackInfo &info)
 
   _transport = std::move(transport);
 
-  _factory->WorkerThread()->BlockingCall([this]() {
+  _factory->NetworkThread()->BlockingCall([this]() {
     _dtls_transport = _transport->dtls_transport();
     _transport->RegisterObserver(this);
   });
@@ -54,7 +54,12 @@ RTCSctpTransport::RTCSctpTransport(const Napi::CallbackInfo &info)
 RTCSctpTransport::~RTCSctpTransport() { wrap()->Release(this); }
 
 void RTCSctpTransport::Stop() {
-  _transport->UnregisterObserver();
+  if (_factory->NetworkThread()->IsCurrent()) {
+    _transport->UnregisterObserver();
+  } else {
+    _factory->NetworkThread()->BlockingCall(
+        [this]() { _transport->UnregisterObserver(); });
+  }
   AsyncObjectWrapWithLoop<RTCSctpTransport>::Stop();
 }
 

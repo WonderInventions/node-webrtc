@@ -68,13 +68,9 @@ test("RTCAudioSink should send even ondata when ondata is defined in ontrack eve
   //   console.log('pcB: onicegatheringstatechange:', e.target.iceGatheringState);
   // };
 
-  pcB.ontrack = (e) =>
-    setTimeout(() => {
-      sink = new RTCAudioSink(e.track);
-      sink.addEventListener("data", () => {
-        ondataDidFired += 1;
-      });
-    }, 1);
+  var TARGET = 10;
+  var received = 0;
+  var interval;
 
   setupPerfectNegotiation(pcA, pcB, true);
   setupPerfectNegotiation(pcB, pcA, false);
@@ -83,29 +79,51 @@ test("RTCAudioSink should send even ondata when ondata is defined in ontrack eve
   const track = source.createTrack();
   pcA.addTrack(track);
 
+  function done() {
+    clearInterval(interval);
+    if (sink) sink.stop();
+    track.stop();
+    pcA.close();
+    pcB.close();
+  }
+
+  pcB.ontrack = (e) =>
+    setTimeout(() => {
+      sink = new RTCAudioSink(e.track);
+      sink.addEventListener("data", () => {
+        ondataDidFired += 1;
+        if (ondataDidFired >= TARGET && received === 0) {
+          received = ondataDidFired;
+          done();
+          t.ok(
+            received >= TARGET,
+            "RTCAudioSink fired at least " + TARGET + " times",
+          );
+          t.end();
+        }
+      });
+    }, 1);
+
   const sampleRate = 8000;
   const samples = new Int16Array(sampleRate / 100);
   for (let n = 0; n < samples.length; n++) {
     samples[n] = Math.random() * 0xffff;
   }
 
-  const interval = setInterval(() => {
+  interval = setInterval(() => {
     source.onData({ samples, sampleRate });
   }, 10);
 
   setTimeout(() => {
-    clearInterval(interval);
-    // yes > 9 and not 10 because some random thing in eventloop and setinterval/timeout result in values to be 9||10||11
-    t.ok(
-      ondataDidFired >= 9,
-      "RTCAudioSink should have fired 10 time in 100ms"
-    );
-    sink.stop();
-    track.stop();
-    pcA.close();
-    pcB.close();
-    t.end();
-  }, 105);
+    if (received === 0) {
+      // Prevent a late data event (where ondataDidFired reaches TARGET
+      // after this timeout) from calling done()/t.end() a second time.
+      received = -1;
+      done();
+      t.fail("RTCAudioSink only fired " + ondataDidFired + " times in 2s");
+      t.end();
+    }
+  }, 2000);
 });
 
 test("RTCAudioSink should send ondata events when defined outside ontrack", (t) => {
@@ -150,32 +168,52 @@ test("RTCAudioSink should send ondata events when defined outside ontrack", (t) 
   pcA.addTrack(track);
 
   const sink = new RTCAudioSink(track);
-  sink.addEventListener("data", () => {
-    ondataDidFired += 1;
-  });
 
   const sampleRate = 8000;
   const samples = new Int16Array(sampleRate / 100);
   for (let n = 0; n < samples.length; n++) {
     samples[n] = Math.random() * 0xffff;
   }
-  const interval = setInterval(() => {
-    source.onData({ samples, sampleRate });
-  }, 10);
 
-  setTimeout(() => {
+  var TARGET = 10;
+  var received = 0;
+  var interval;
+
+  function done() {
     clearInterval(interval);
-    // TODO(jack): yes >= 9 and not 10 because some random thing in eventloop and setinterval/timeout result in values to be 9||10||11
-    t.ok(
-      ondataDidFired >= 9,
-      "RTCAudioSink should have fired 10 time in 100ms"
-    );
     sink.stop();
     track.stop();
     pcA.close();
     pcB.close();
-    t.end();
-  }, 105);
+  }
+
+  sink.addEventListener("data", () => {
+    ondataDidFired += 1;
+    if (ondataDidFired >= TARGET && received === 0) {
+      received = ondataDidFired;
+      done();
+      t.ok(
+        received >= TARGET,
+        "RTCAudioSink fired at least " + TARGET + " times",
+      );
+      t.end();
+    }
+  });
+
+  interval = setInterval(() => {
+    source.onData({ samples, sampleRate });
+  }, 10);
+
+  setTimeout(() => {
+    if (received === 0) {
+      // Prevent a late data event (where ondataDidFired reaches TARGET
+      // after this timeout) from calling done()/t.end() a second time.
+      received = -1;
+      done();
+      t.fail("RTCAudioSink only fired " + ondataDidFired + " times in 2s");
+      t.end();
+    }
+  }, 2000);
 });
 
 /**

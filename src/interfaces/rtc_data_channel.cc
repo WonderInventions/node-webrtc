@@ -30,7 +30,9 @@ DataChannelObserver::DataChannelObserver(
     PeerConnectionFactory *factory,
     rtc::scoped_refptr<webrtc::DataChannelInterface> jingleDataChannel)
     : _factory(factory), _jingleDataChannel(std::move(jingleDataChannel)) {
-  _jingleDataChannel->RegisterObserver(this);
+  // Don't register here. Registration happens in RTCDataChannel's constructor,
+  // which avoids a double RegisterObserver that causes message loss through
+  // M114's ObserverAdapter signaling thread relay.
 }
 
 void DataChannelObserver::OnStateChange() {
@@ -72,8 +74,19 @@ RTCDataChannel::RTCDataChannel(const Napi::CallbackInfo &info)
   _jingleDataChannel = observer->_jingleDataChannel;
   _jingleDataChannel->RegisterObserver(this);
 
-  // Re-queue cached observer events
+  // Re-queue any cached observer events (from the window between
+  // OnDataChannel and this constructor).
   requeue(*observer, *this);
+
+  // If the channel already transitioned to open before we registered,
+  // dispatch the open event so JS onopen handlers fire.
+  auto state = _jingleDataChannel->state();
+  if (state == webrtc::DataChannelInterface::kOpen) {
+    Dispatch(
+        Callback1<RTCDataChannel>::Create([state](RTCDataChannel &channel) {
+          RTCDataChannel::HandleStateChange(channel, state);
+        }));
+  }
 
   delete observer;
 
@@ -106,11 +119,15 @@ void RTCDataChannel::CleanupInternals() {
 
 void RTCDataChannel::OnPeerConnectionClosed() {
   if (_jingleDataChannel != nullptr) {
+    HandleStateChange(*this, webrtc::DataChannelInterface::kClosed);
     Stop();
   }
 }
 
 void RTCDataChannel::OnStateChange() {
+  if (_jingleDataChannel == nullptr) {
+    return;
+  }
   auto state = _jingleDataChannel->state();
   if (state == webrtc::DataChannelInterface::kClosed) {
     CleanupInternals();
