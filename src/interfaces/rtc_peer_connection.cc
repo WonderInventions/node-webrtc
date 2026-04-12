@@ -8,7 +8,7 @@
 #include "src/interfaces/rtc_peer_connection.hh"
 
 #include <iostream>
-#include <src/api/jsep.h>
+#include <webrtc/api/jsep.h>
 #include <webrtc/api/media_types.h>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/rtc_error.h>
@@ -88,8 +88,9 @@ RTCPeerConnection::RTCPeerConnection(const Napi::CallbackInfo &info)
   _shouldReleaseFactory = true;
 
   auto portAllocator =
-      std::unique_ptr<cricket::PortAllocator>(new cricket::BasicPortAllocator(
-          _factory->getNetworkManager(), _factory->getSocketFactory()));
+      std::unique_ptr<webrtc::PortAllocator>(new webrtc::BasicPortAllocator(
+          _factory->env(), _factory->getNetworkManager(),
+          _factory->getSocketFactory()));
   _port_range = configuration.portRange;
   portAllocator->SetPortRange(_port_range.min.FromMaybe(0),
                               _port_range.max.FromMaybe(65535));
@@ -354,9 +355,9 @@ Napi::Value RTCPeerConnection::AddTransceiver(const Napi::CallbackInfo &info) {
 
   CONVERT_ARGS_OR_THROW_AND_RETURN_NAPI(
       info, args,
-      std::tuple<Either<cricket::MediaType COMMA MediaStreamTrack *> COMMA
+      std::tuple<Either<webrtc::MediaType COMMA MediaStreamTrack *> COMMA
                      Maybe<webrtc::RtpTransceiverInit>>)
-  Either<cricket::MediaType, MediaStreamTrack *> kindOrTrack =
+  Either<webrtc::MediaType, MediaStreamTrack *> kindOrTrack =
       std::get<0>(args);
   Maybe<webrtc::RtpTransceiverInit> maybeInit = std::get<1>(args);
   auto result =

@@ -9,6 +9,7 @@
 
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/rtc_base/ref_counted_object.h>
+#include <webrtc/rtc_base/crypto_random.h>
 
 #include "src/converters.hh"
 #include "src/converters/arguments.hh"

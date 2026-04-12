@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <optional>
+
 #include <webrtc/api/data_channel_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 
@@ -81,8 +83,8 @@ private:
   BinaryType _binaryType;
   int _cached_id;
   std::string _cached_label;
-  uint16_t _cached_max_packet_life_time;
-  uint16_t _cached_max_retransmits;
+  std::optional<int> _cached_max_packet_life_time;
+  std::optional<int> _cached_max_retransmits;
   bool _cached_negotiated;
   bool _cached_ordered;
   std::string _cached_protocol;

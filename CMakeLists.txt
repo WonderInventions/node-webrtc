@@ -10,7 +10,11 @@ macro(assign_bool var)
   endif()
 endmacro()
 
-assign_bool(use_custom_libcxx "TRUE")
+if (WIN32)
+  assign_bool(use_custom_libcxx "FALSE")
+else()
+  assign_bool(use_custom_libcxx "TRUE")
+endif()
 assign_bool(is_arm32 "y$ENV{TARGET_ARCH}" STREQUAL "yarm")
 assign_bool(is_arm64 "y$ENV{TARGET_ARCH}" STREQUAL "yarm64")
 
@@ -75,15 +79,18 @@ set(libc++_objects
   atomic${obj_ext}
   barrier${obj_ext}
   bind${obj_ext}
+  call_once${obj_ext}
   charconv${obj_ext}
   chrono${obj_ext}
   condition_variable${obj_ext}
   condition_variable_destructor${obj_ext}
   d2fixed${obj_ext}
   d2s${obj_ext}
+  directory_iterator${obj_ext}
+  error_category${obj_ext}
   exception${obj_ext}
   f2s${obj_ext}
-  format${obj_ext}
+  filesystem_error${obj_ext}
   functional${obj_ext}
   future${obj_ext}
   hash${obj_ext}
@@ -95,7 +102,10 @@ set(libc++_objects
   mutex${obj_ext}
   mutex_destructor${obj_ext}
   new${obj_ext}
-  optional${obj_ext}
+  new_handler${obj_ext}
+  new_helpers${obj_ext}
+  operations${obj_ext}
+  path${obj_ext}
   random${obj_ext}
   random_shuffle${obj_ext}
   regex${obj_ext}
@@ -106,21 +116,16 @@ set(libc++_objects
   system_error${obj_ext}
   thread${obj_ext}
   typeinfo${obj_ext}
-  utility${obj_ext}
   valarray${obj_ext}
-  variant${obj_ext}
   vector${obj_ext}
   verbose_abort${obj_ext}
 )
 
 if(WIN32)
   list(APPEND libc++_objects
-    legacy_debug_handler${obj_ext}
-    legacy_pointer_safety${obj_ext}
     locale_win32${obj_ext}
     support${obj_ext}
     thread_win32${obj_ext}
-    verbose_abort${obj_ext}
   )
 endif()
 
@@ -183,7 +188,12 @@ set_target_properties(libc++abi PROPERTIES IMPORTED_OBJECTS_DEBUG "${libc++abi_o
 # M106: branch-heads/5249
 # M110: branch-heads/5481
 # M114: branch-heads/5735
-set(WEBRTC_REVISION branch-heads/5735)
+set(DEFAULT_WEBRTC_REVISION branch-heads/5735)
+if(DEFINED ENV{WEBRTC_REVISION} AND NOT "$ENV{WEBRTC_REVISION}" STREQUAL "")
+  set(DEFAULT_WEBRTC_REVISION "$ENV{WEBRTC_REVISION}")
+endif()
+set(WEBRTC_REVISION "${DEFAULT_WEBRTC_REVISION}" CACHE STRING "libwebrtc branch/tag/ref to fetch")
+message(STATUS "Using WEBRTC_REVISION=${WEBRTC_REVISION}")
 
 file(STRINGS nix.gni NIX_GN_GEN_ARGS)
 list(APPEND GN_GEN_ARGS
@@ -246,11 +256,16 @@ else()
   endif()
 endif()
 
-if (WIN32)
+if (WIN32 AND ${use_custom_libcxx})
   set(byproducts
     ${libc++_objects}
     ${libwebrtc_binary_dir}/obj/webrtc.lib
     ${libwebrtc_binary_dir}/obj/api/libjingle_peerconnection_api.lib
+  )
+elseif(WIN32)
+  set(byproducts
+    ${libwebrtc_binary_dir}/obj/webrtc.lib
+    ${libwebrtc_binary_dir}/obj/api/create_peerconnection_factory.lib
   )
 else()
   set(byproducts
@@ -278,7 +293,7 @@ ExternalProject_Add(
 
   DOWNLOAD_COMMAND  ${CMAKE_COMMAND} -E env DEPOT_TOOLS=${depot_tools_install_dir} PLATFORM=${PLATFORM} WEBRTC_REVISION=${WEBRTC_REVISION} ${CMAKE_SOURCE_DIR}/scripts/download-webrtc.${suffix}
   CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env BINARY_DIR=<BINARY_DIR> DEPOT_TOOLS=${depot_tools_install_dir} GN_GEN_ARGS=${GN_GEN_ARGS} SOURCE_DIR=<SOURCE_DIR> ${CMAKE_SOURCE_DIR}/scripts/configure-webrtc.${suffix}
-  BUILD_COMMAND     ${CMAKE_COMMAND} -E env CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} DEPOT_TOOLS=${depot_tools_install_dir} ${CMAKE_SOURCE_DIR}/scripts/build-webrtc.${suffix}
+  BUILD_COMMAND     ${CMAKE_COMMAND} -E env CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} DEPOT_TOOLS=${depot_tools_install_dir} USE_CUSTOM_LIBCXX=${use_custom_libcxx} ${CMAKE_SOURCE_DIR}/scripts/build-webrtc.${suffix}
   INSTALL_COMMAND   ""
 )
 
@@ -303,23 +318,25 @@ add_library(libpeerconnection STATIC IMPORTED)
 add_dependencies(libpeerconnection project_libwebrtc)
 
 if(WIN32)
-  set_property(TARGET libpeerconnection PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/libjingle_peerconnection_api.lib")
+  set_property(TARGET libpeerconnection PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/create_peerconnection_factory.lib")
 else()
   set_property(TARGET libpeerconnection PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/libjingle_peerconnection_api.a")
 endif()
 
-# Video codec factories (audio factories are already in libwebrtc.a)
-add_library(libbuiltin_video_encoder_factory STATIC IMPORTED)
-add_dependencies(libbuiltin_video_encoder_factory project_libwebrtc)
-set_property(TARGET libbuiltin_video_encoder_factory PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_encoder_factory.a")
+if(NOT WIN32)
+  # Video codec factories (audio factories are already in libwebrtc.a)
+  add_library(libbuiltin_video_encoder_factory STATIC IMPORTED)
+  add_dependencies(libbuiltin_video_encoder_factory project_libwebrtc)
+  set_property(TARGET libbuiltin_video_encoder_factory PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_encoder_factory.a")
 
-add_library(libbuiltin_video_decoder_factory STATIC IMPORTED)
-add_dependencies(libbuiltin_video_decoder_factory project_libwebrtc)
-set_property(TARGET libbuiltin_video_decoder_factory PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_decoder_factory.a")
+  add_library(libbuiltin_video_decoder_factory STATIC IMPORTED)
+  add_dependencies(libbuiltin_video_decoder_factory project_libwebrtc)
+  set_property(TARGET libbuiltin_video_decoder_factory PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/api/video_codecs/libbuiltin_video_decoder_factory.a")
 
-add_library(librtc_internal_video_codecs STATIC IMPORTED)
-add_dependencies(librtc_internal_video_codecs project_libwebrtc)
-set_property(TARGET librtc_internal_video_codecs PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/media/librtc_internal_video_codecs.a")
+  add_library(librtc_internal_video_codecs STATIC IMPORTED)
+  add_dependencies(librtc_internal_video_codecs project_libwebrtc)
+  set_property(TARGET librtc_internal_video_codecs PROPERTY IMPORTED_LOCATION "${libwebrtc_binary_dir}/obj/media/librtc_internal_video_codecs.a")
+endif()
 
 set(libc++_include_dir
   "${libwebrtc_source_dir}/src/buildtools/third_party/libc++/trunk/include"
@@ -400,11 +417,16 @@ target_link_libraries(${MODULE} PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
   libpeerconnection
   libwebrtc
-  libbuiltin_video_encoder_factory
-  libbuiltin_video_decoder_factory
-  librtc_internal_video_codecs
   ${CMAKE_JS_LIB}
 )
+
+if(NOT WIN32)
+  target_link_libraries(${MODULE} PRIVATE
+    libbuiltin_video_encoder_factory
+    libbuiltin_video_decoder_factory
+    librtc_internal_video_codecs
+  )
+endif()
 
 target_compile_definitions(${MODULE} PRIVATE
   -DNAPI_VERSION=3
@@ -416,7 +438,12 @@ if(WIN32)
     PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
   )
 
+  target_compile_options(${MODULE} PRIVATE
+    /FI${CMAKE_SOURCE_DIR}/src/webrtc_compat.hh
+  )
+
   target_link_libraries(${MODULE} PRIVATE
+    crypt32.lib
     dmoguids.lib
     msdmo.lib
     secur32.lib
@@ -430,6 +457,10 @@ if(WIN32)
   if (${use_custom_libcxx})
     target_include_directories(${MODULE} SYSTEM PRIVATE
       ${libc++_include_dir}
+    )
+
+    target_compile_options(${MODULE} PRIVATE
+      /clang:-nostdinc++
     )
 
     target_link_libraries(${MODULE} PRIVATE

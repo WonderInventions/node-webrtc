@@ -1,86 +1,86 @@
 #include "src/dictionaries/webrtc/rtc_stats_member_interface.hh"
 
 #include <cstdint>
-#include <iosfwd>
+#include <map>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <node-addon-api/napi.h>
-#include <webrtc/api/stats/rtc_stats.h>
+#include <webrtc/api/stats/attribute.h>
 
 #include "src/converters.hh"
 
 namespace node_webrtc {
 
-TO_NAPI_IMPL(const webrtc::RTCStatsMemberInterface *, pair) {
+TO_NAPI_IMPL(const webrtc::Attribute *, pair) {
   auto env = pair.first;
   auto value = pair.second;
-  switch (value->type()) {
-  case webrtc::RTCStatsMemberInterface::Type::kBool: // bool
-    return From<Napi::Value>(
-        std::make_pair(env, *value->cast_to<webrtc::RTCStatsMember<bool>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kInt32: // int32_t
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<int32_t>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kUint32: // uint32_t
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<uint32_t>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kInt64: // int64_t
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<int64_t>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kUint64: // uint64_t
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<uint64_t>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kDouble: // double
-    return From<Napi::Value>(
-        std::make_pair(env, *value->cast_to<webrtc::RTCStatsMember<double>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kString: // std::string
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::string>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceBool: // std::vector<bool>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<bool>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceInt32: // std::vector<int32_t>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<int32_t>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceUint32: // std::vector<uint32_t>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<uint32_t>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceInt64: // std::vector<int64_t>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<int64_t>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceUint64: // std::vector<uint64_t>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<uint64_t>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceDouble: // std::vector<double>
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<webrtc::RTCStatsMember<std::vector<double>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::
-      kSequenceString: // std::vector<std::string>
-    return From<Napi::Value>(std::make_pair(
-        env,
-        *value->cast_to<webrtc::RTCStatsMember<std::vector<std::string>>>()));
 
-  case webrtc::RTCStatsMemberInterface::Type::kMapStringUint64:
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<
-                 webrtc::RTCStatsMember<std::map<std::string, uint64_t>>>()));
-  case webrtc::RTCStatsMemberInterface::Type::kMapStringDouble:
-    return From<Napi::Value>(std::make_pair(
-        env, *value->cast_to<
-                 webrtc::RTCStatsMember<std::map<std::string, double>>>()));
-  default:
-    return Validation<Napi::Value>::Invalid(
-        "RTCStatsMemberInterface type not supported, file a bug against "
-        "node-webrtc");
+  if (!value || !value->has_value()) {
+    return Validation<Napi::Value>::Invalid("RTC stats attribute is undefined");
   }
+
+  if (value->holds_alternative<bool>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<bool>()));
+  }
+  if (value->holds_alternative<int32_t>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<int32_t>()));
+  }
+  if (value->holds_alternative<uint32_t>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<uint32_t>()));
+  }
+  if (value->holds_alternative<int64_t>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<int64_t>()));
+  }
+  if (value->holds_alternative<uint64_t>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<uint64_t>()));
+  }
+  if (value->holds_alternative<double>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<double>()));
+  }
+  if (value->holds_alternative<std::string>()) {
+    return From<Napi::Value>(std::make_pair(env, value->get<std::string>()));
+  }
+  if (value->holds_alternative<std::vector<bool>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<bool>>()));
+  }
+  if (value->holds_alternative<std::vector<int32_t>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<int32_t>>()));
+  }
+  if (value->holds_alternative<std::vector<uint32_t>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<uint32_t>>()));
+  }
+  if (value->holds_alternative<std::vector<int64_t>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<int64_t>>()));
+  }
+  if (value->holds_alternative<std::vector<uint64_t>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<uint64_t>>()));
+  }
+  if (value->holds_alternative<std::vector<double>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<double>>()));
+  }
+  if (value->holds_alternative<std::vector<std::string>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::vector<std::string>>()));
+  }
+  if (value->holds_alternative<std::map<std::string, uint64_t>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::map<std::string, uint64_t>>()));
+  }
+  if (value->holds_alternative<std::map<std::string, double>>()) {
+    return From<Napi::Value>(
+        std::make_pair(env, value->get<std::map<std::string, double>>()));
+  }
+
+  return Validation<Napi::Value>::Invalid(
+      "RTC stats attribute type not supported, file a bug against "
+      "node-webrtc");
 }
 
 } // namespace node_webrtc

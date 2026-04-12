@@ -14,6 +14,20 @@ namespace node_webrtc {
 
 #define RTC_SESSION_DESCRIPTION_INIT_FN CreateValidRTCSessionDescriptionInit
 
+static webrtc::SdpType ToWebrtcSdpType(const RTCSdpType type) {
+  switch (type) {
+  case RTCSdpType::kOffer:
+    return webrtc::SdpType::kOffer;
+  case RTCSdpType::kPrAnswer:
+    return webrtc::SdpType::kPrAnswer;
+  case RTCSdpType::kAnswer:
+    return webrtc::SdpType::kAnswer;
+  case RTCSdpType::kRollback:
+    return webrtc::SdpType::kRollback;
+  }
+  return webrtc::SdpType::kOffer;
+}
+
 static Validation<RTC_SESSION_DESCRIPTION_INIT>
 RTC_SESSION_DESCRIPTION_INIT_FN(const RTCSdpType type, const std::string &sdp) {
   return Pure(CreateRTCSessionDescriptionInit(type, sdp));
@@ -30,27 +44,15 @@ TO_NAPI_IMPL(RTCSessionDescriptionInit, pair) {
 
 CONVERTER_IMPL(RTCSessionDescriptionInit, webrtc::SessionDescriptionInterface *,
                init) {
-  std::string type_;
-  switch (init.type) {
-  case RTCSdpType::kOffer:
-    type_ = "offer";
-    break;
-  case RTCSdpType::kPrAnswer:
-    type_ = "pranswer";
-    break;
-  case RTCSdpType::kAnswer:
-    type_ = "answer";
-    break;
-  case RTCSdpType::kRollback:
-    type_ = "rollback";
-  }
   webrtc::SdpParseError error;
-  auto description = webrtc::CreateSessionDescription(type_, init.sdp, &error);
+  auto description =
+      webrtc::CreateSessionDescription(ToWebrtcSdpType(init.type), init.sdp,
+                                       &error);
   if (!description) {
     return Validation<webrtc::SessionDescriptionInterface *>::Invalid(
         error.description);
   }
-  return Pure(description);
+  return Pure(description.release());
 }
 
 CONVERTER_IMPL(webrtc::SessionDescriptionInterface *, RTCSessionDescriptionInit,

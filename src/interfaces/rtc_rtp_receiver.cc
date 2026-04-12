@@ -72,8 +72,8 @@ Napi::Value RTCRtpReceiver::GetCapabilities(const Napi::CallbackInfo &info) {
   CONVERT_ARGS_OR_THROW_AND_RETURN_NAPI(info, kindString, std::string)
   if (kindString == "audio" || kindString == "video") {
     auto factory = PeerConnectionFactory::GetOrCreateDefault();
-    auto kind = kindString == "audio" ? cricket::MEDIA_TYPE_AUDIO
-                                      : cricket::MEDIA_TYPE_VIDEO;
+    auto kind = kindString == "audio" ? webrtc::MediaType::AUDIO
+                                      : webrtc::MediaType::VIDEO;
     auto capabilities = factory->factory()->GetRtpReceiverCapabilities(kind);
     PeerConnectionFactory::Release();
     CONVERT_OR_THROW_AND_RETURN_NAPI(info.Env(), capabilities, result,

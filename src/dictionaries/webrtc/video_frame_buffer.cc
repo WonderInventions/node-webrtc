@@ -8,7 +8,7 @@
 
 namespace node_webrtc {
 
-static rtc::scoped_refptr<webrtc::I420Buffer>
+static webrtc::scoped_refptr<webrtc::I420Buffer>
 CreateI420Buffer(I420ImageData i420Frame) {
   auto buffer =
       webrtc::I420Buffer::Create(i420Frame.width(), i420Frame.height());
@@ -21,11 +21,12 @@ CreateI420Buffer(I420ImageData i420Frame) {
   return buffer;
 }
 
-CONVERTER_IMPL(I420ImageData, rtc::scoped_refptr<webrtc::I420Buffer>, value) {
+CONVERTER_IMPL(I420ImageData, webrtc::scoped_refptr<webrtc::I420Buffer>,
+               value) {
   return Pure(CreateI420Buffer(value));
 }
 
-TO_NAPI_IMPL(rtc::scoped_refptr<webrtc::VideoFrameBuffer>, pair) {
+TO_NAPI_IMPL(webrtc::scoped_refptr<webrtc::VideoFrameBuffer>, pair) {
   auto value = pair.second;
   return value->type() == webrtc::VideoFrameBuffer::Type::kI420
              ? From<Napi::Value>(std::make_pair(pair.first, value->GetI420()))
@@ -34,7 +35,8 @@ TO_NAPI_IMPL(rtc::scoped_refptr<webrtc::VideoFrameBuffer>, pair) {
                    "please!)");
 }
 
-CONVERT_VIA(Napi::Value, I420ImageData, rtc::scoped_refptr<webrtc::I420Buffer>)
+CONVERT_VIA(Napi::Value, I420ImageData,
+            webrtc::scoped_refptr<webrtc::I420Buffer>)
 
 TO_NAPI_IMPL(const webrtc::I420BufferInterface *, pair) {
   auto env = pair.first;

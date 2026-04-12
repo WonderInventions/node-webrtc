@@ -5,12 +5,14 @@
 
 [![NPM](https://img.shields.io/npm/v/@roamhq/wrtc.svg)](https://www.npmjs.com/package/@roamhq/wrtc)
 
-node-webrtc is a Node.js Native Addon that provides bindings to [WebRTC
-M106](https://webrtc.googlesource.com/src/+/branch-heads/5249). This project is
+node-webrtc is a Node.js Native Addon that provides bindings to libwebrtc. This project is
 aiming for spec-compliance and will eventually be tested using the W3C's
 [web-platform-tests](https://github.com/web-platform-tests/wpt) project. A
 number of [nonstandard APIs](docs/nonstandard-apis.md) for testing are also
 included.
+
+This fork defaults to `branch-heads/5735` and supports overriding the upstream
+libwebrtc ref at build time with `WEBRTC_REVISION=<ref>`.
 
 ## Install
 
@@ -23,6 +25,20 @@ architecture, based on optional dependency filters.
 
 To install a debug build or cross-compile, you should [build from
 source](docs/build-from-source.md).
+
+To experiment with a different upstream libwebrtc revision when debugging a
+native networking issue:
+
+```bash
+WEBRTC_REVISION=branch-heads/5735 npm run build
+```
+
+or on PowerShell:
+
+```powershell
+$env:WEBRTC_REVISION="branch-heads/5735"
+npm run build
+```
 
 ## Supported Platforms
 

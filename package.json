@@ -57,8 +57,7 @@
     "make-prebuilt": "node scripts/make-prebuilt.js",
     "install-example": "node scripts/install-example.js",
     "lint": "eslint lib/*.js lib/**/*.js test/*.js test/**/*.js scripts/*.js",
-    "test": "node --expose-gc test/all.js",
-    "prepare": "husky"
+    "test": "node --expose-gc test/all.js"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",

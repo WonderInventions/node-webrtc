@@ -2,11 +2,9 @@
 
 #include <memory>
 
-#include "src/converters/napi.hh"
+#include <webrtc/api/jsep.h>
 
-namespace webrtc {
-class IceCandidateInterface;
-}
+#include "src/converters/napi.hh"
 
 #define ICE_CANDIDATE_INTERFACE webrtc::IceCandidateInterface *
 
