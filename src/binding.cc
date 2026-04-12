@@ -6,8 +6,11 @@
  * tree.
  */
 #include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <node-addon-api/napi.h>
 #include <uv.h>
+#include <webrtc/rtc_base/logging.h>
 
 #include "src/interfaces/media_stream.hh"
 #include "src/interfaces/media_stream_track.hh"
@@ -35,7 +38,33 @@
 
 static void dispose(void *) { node_webrtc::PeerConnectionFactory::Dispose(); }
 
+static webrtc::LoggingSeverity parseLogSeverity(const char* value) {
+  if (value == nullptr || *value == '\0') {
+    return webrtc::LoggingSeverity::LS_INFO;
+  }
+  if (std::strcmp(value, "verbose") == 0) {
+    return webrtc::LoggingSeverity::LS_VERBOSE;
+  }
+  if (std::strcmp(value, "warning") == 0) {
+    return webrtc::LoggingSeverity::LS_WARNING;
+  }
+  if (std::strcmp(value, "error") == 0) {
+    return webrtc::LoggingSeverity::LS_ERROR;
+  }
+  if (std::strcmp(value, "none") == 0) {
+    return webrtc::LoggingSeverity::LS_NONE;
+  }
+  return webrtc::LoggingSeverity::LS_INFO;
+}
+
 static Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  if (const char* nativeLog = std::getenv("WRTC_NATIVE_LOG")) {
+    const auto severity = parseLogSeverity(nativeLog);
+    webrtc::LogMessage::SetLogToStderr(true);
+    webrtc::LogMessage::LogToDebug(severity);
+    RTC_LOG(LS_INFO) << "[wrtc] native logging enabled";
+  }
+
   node_webrtc::ErrorFactory::Init(env, exports);
   node_webrtc::GetDisplayMedia::Init(env, exports);
   node_webrtc::GetUserMedia::Init(env, exports);

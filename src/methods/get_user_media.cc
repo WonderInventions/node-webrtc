@@ -10,6 +10,7 @@
 #include <src/api/media_stream_interface.h>
 #include <webrtc/api/audio_options.h>
 #include <webrtc/api/peer_connection_interface.h>
+#include <webrtc/rtc_base/crypto_random.h>
 
 #include "src/converters.hh"
 #include "src/converters/arguments.hh"
@@ -133,7 +134,7 @@ node_webrtc::GetUserMedia::GetUserMediaImpl(const Napi::CallbackInfo &info) {
           .FromMaybe(false);
 
   if (audio) {
-    cricket::AudioOptions options;
+    webrtc::AudioOptions options;
     auto source = factory->factory()->CreateAudioSource(options);
     auto track = factory->factory()->CreateAudioTrack(rtc::CreateRandomUuid(),
                                                       source.get());

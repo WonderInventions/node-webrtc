@@ -4,7 +4,7 @@
 
 // IWYU pragma: no_include "src/enums/macros/impls.hh"
 
-#define ICE_ROLE cricket::IceRole
+#define ICE_ROLE webrtc::IceRole
 #define ICE_ROLE_NAME "RTCIceRole"
 #define ICE_ROLE_LIST                                                          \
   ENUM_SUPPORTED(ICE_ROLE::ICEROLE_CONTROLLING, "controlling")                 \

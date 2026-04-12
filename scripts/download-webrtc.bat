@@ -14,7 +14,7 @@ CALL gclient config --unmanaged --spec solutions=[{\"name\":\"src\",\"url\":\"ht
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO gclient sync
-CALL gclient sync --nohooks --with_branch_heads -r %WEBRTC_REVISION% -R
+CALL gclient sync --jobs 1 --nohooks --with_branch_heads -r %WEBRTC_REVISION% -R
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO lastchange
@@ -24,6 +24,8 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 ECHO update toolchain
 CALL python src\build\vs_toolchain.py update --force
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+CALL python "%~dp0patch-vs-toolchain.py" src\build\vs_toolchain.py
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO download clang
 CALL python3 src\tools\clang\scripts\update.py
@@ -32,8 +34,8 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 ECHO rmdir webrtc
 rmdir webrtc
 
-ECHO mklink /D webrtc src
-mklink /D webrtc src
+ECHO mklink /J webrtc src
+mklink /J webrtc src
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 GOTO DONE

@@ -11,6 +11,7 @@
 #include <mutex>
 
 #include <node-addon-api/napi.h>
+#include <webrtc/api/environment/environment.h>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/modules/audio_device/include/audio_device.h>
@@ -47,6 +48,8 @@ public:
     return _factory;
   }
 
+  const webrtc::Environment &env() const { return _env; }
+
   std::unique_ptr<rtc::Thread> &SignalingThread() { return _signalingThread; }
 
   std::unique_ptr<rtc::Thread> &WorkerThread() { return _workerThread; }
@@ -62,6 +65,7 @@ public:
   static void Dispose();
 
 private:
+  webrtc::Environment _env;
   std::unique_ptr<rtc::Thread> _signalingThread;
   std::unique_ptr<rtc::Thread> _workerThread;
 

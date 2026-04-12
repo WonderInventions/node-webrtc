@@ -12,6 +12,7 @@
 #include <webrtc/api/media_stream_interface.h>
 #include <webrtc/api/peer_connection_interface.h>
 #include <webrtc/api/scoped_refptr.h>
+#include <webrtc/rtc_base/crypto_random.h>
 
 #include "src/converters.hh"
 #include "src/converters/arguments.hh"

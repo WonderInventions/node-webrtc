@@ -28,7 +28,6 @@
 namespace webrtc {
 
 class DataChannelInterface;
-class IceCandidateInterface;
 class MediaStreamInterface;
 class RtpReceiverInterface;
 class RtpTransceiverInterface;

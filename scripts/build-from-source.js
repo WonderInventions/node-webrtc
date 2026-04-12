@@ -36,9 +36,18 @@ function main() {
   if (platform === "win32") {
     // Explicitly find the real rc.exe from the Windows SDK and pass it to
     // CMake, since cmake-js may still find the npm "rc" package otherwise.
-    const { stdout } = spawnSync("where", ["rc.exe"], { encoding: "utf-8" });
-    if (stdout) {
-      args.push(`--CDCMAKE_RC_COMPILER="${stdout.replace(/\\/g, "/")}"`);
+    const explicitRc = process.env.WRTC_RC_COMPILER;
+    if (explicitRc) {
+      args.push(`--CDCMAKE_RC_COMPILER="${explicitRc.replace(/\\/g, "/")}"`);
+    } else {
+      const { stdout } = spawnSync("where", ["rc.exe"], { encoding: "utf-8" });
+      const firstMatch = stdout
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .find(Boolean);
+      if (firstMatch) {
+        args.push(`--CDCMAKE_RC_COMPILER="${firstMatch.replace(/\\/g, "/")}"`);
+      }
     }
   }
 

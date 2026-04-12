@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include <webrtc/api/data_channel_interface.h>
@@ -38,12 +39,12 @@ static Validation<webrtc::DataChannelInit> DATA_CHANNEL_INIT_FN(
   init.ordered = ordered;
   init.maxRetransmitTime =
       maxPacketLifeTime
-          .Map([](auto i) { return absl::make_optional(static_cast<int>(i)); })
-          .FromMaybe(absl::optional<int>());
+          .Map([](auto i) { return std::make_optional(static_cast<int>(i)); })
+          .FromMaybe(std::optional<int>());
   init.maxRetransmits =
       maxRetransmits
-          .Map([](auto i) { return absl::make_optional(static_cast<int>(i)); })
-          .FromMaybe(absl::optional<int>());
+          .Map([](auto i) { return std::make_optional(static_cast<int>(i)); })
+          .FromMaybe(std::optional<int>());
   init.protocol = protocol;
   init.negotiated = negotiated;
   init.id = id.Map([](auto i) { return static_cast<int>(i); }).FromMaybe(-1);

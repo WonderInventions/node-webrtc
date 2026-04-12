@@ -6,7 +6,11 @@ set PATH=%DEPOT_TOOLS%;%PATH%
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO ninja
-call autoninja webrtc libjingle_peerconnection libc++ libc++abi builtin_video_encoder_factory builtin_video_decoder_factory rtc_internal_video_codecs
+IF /I "%USE_CUSTOM_LIBCXX%"=="true" (
+  call autoninja webrtc create_peerconnection_factory libc++
+) ELSE (
+  call autoninja webrtc create_peerconnection_factory
+)
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 GOTO DONE

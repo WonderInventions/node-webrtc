@@ -9,6 +9,22 @@ ECHO SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+IF NOT EXIST "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools" GOTO AFTER_VS_OVERRIDE
+ECHO SET GYP_MSVS_OVERRIDE_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools
+SET "GYP_MSVS_OVERRIDE_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools"
+ECHO SET GYP_MSVS_VERSION=2022
+SET "GYP_MSVS_VERSION=2022"
+ECHO SET vs2022_install=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools
+SET "vs2022_install=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools"
+IF NOT EXIST "C:\Program Files (x86)\Windows Kits\10" GOTO AFTER_GN_WIN_ARGS
+ECHO SET WINDOWSSDKDIR=C:\Program Files (x86)\Windows Kits\10
+SET "WINDOWSSDKDIR=C:\Program Files (x86)\Windows Kits\10"
+ECHO SET WDK_DIR=C:\Program Files (x86)\Windows Kits\10
+SET "WDK_DIR=C:\Program Files (x86)\Windows Kits\10"
+:AFTER_GN_WIN_ARGS
+:AFTER_VS_OVERRIDE
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
 ECHO cd SOURCE_DIR
 cd %SOURCE_DIR%
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
