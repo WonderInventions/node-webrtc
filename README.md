@@ -36,13 +36,14 @@ still be able to [build from source](docs/build-from-source.md).
   <thead>
     <tr>
       <td colspan="2" rowspan="2"></td>
-      <th colspan="2">Linux</th>
+      <th colspan="3">Linux</th>
       <th colspan="2">macOS</th>
       <th>Windows</th>
     </tr>
     <tr>
       <th>x64</th>
       <th>arm64</th>
+      <th>arm</th>
       <th>x64</th>
       <th>arm64</th>
       <th>x64</th>
@@ -57,11 +58,13 @@ still be able to [build from source](docs/build-from-source.md).
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
+      <td align="center">✓</td>
     </tr>
     <tr>
       <th>22</th>
       <td align="center">✓</td>
       <td align="center">?</td>
+      <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
