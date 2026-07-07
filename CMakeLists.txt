@@ -396,13 +396,34 @@ target_include_directories(${MODULE} PRIVATE
   ${CMAKE_SOURCE_DIR}
 )
 
+# NOTE: These static libs have cross-references (e.g. librtc_internal_video_codecs
+# needs webrtc::SupportedVP9Codecs, which is defined in libwebrtc), so a single-pass
+# linker (as used by our Linux cross-compilers) needs --start-group/--end-group to
+# resolve them regardless of link order. Not supported by MSVC's linker or Apple's ld,
+# but also not needed there since those platforms use whole-program symbol resolution.
+if (WIN32 OR APPLE)
+  set(peerconnection_libs
+    libpeerconnection
+    libwebrtc
+    libbuiltin_video_encoder_factory
+    libbuiltin_video_decoder_factory
+    librtc_internal_video_codecs
+  )
+else()
+  set(peerconnection_libs
+    -Wl,--start-group
+    libpeerconnection
+    libwebrtc
+    libbuiltin_video_encoder_factory
+    libbuiltin_video_decoder_factory
+    librtc_internal_video_codecs
+    -Wl,--end-group
+  )
+endif()
+
 target_link_libraries(${MODULE} PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
-  libpeerconnection
-  libwebrtc
-  libbuiltin_video_encoder_factory
-  libbuiltin_video_decoder_factory
-  librtc_internal_video_codecs
+  ${peerconnection_libs}
   ${CMAKE_JS_LIB}
 )
 
