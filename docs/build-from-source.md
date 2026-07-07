@@ -50,10 +50,11 @@ The supported cross-compilation directions are:
 - MacOS arm64 ➡️ MacOS x64
 - MacOS x64 ➡️ ️MacOS arm64
 - Linux x64 ➡️ Linux arm64
+- Linux x64 ➡️ Linux arm (32-bit, e.g. Raspberry Pi 3B+)
 
 To run e.g. that that cross-compilation:
 
-1. Set `TARGET_ARCH` to "arm64"
+1. Set `TARGET_ARCH` to "arm64" (or "arm" for 32-bit ARM)
 2. Re-run `npm run build`
 
 ### Debug Builds

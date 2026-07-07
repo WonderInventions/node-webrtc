@@ -23,8 +23,11 @@ let
         nativeBuildInputs =
           (with pkgs; [
             cmake
+            curl
+            git
             ninja
             nodejs_24
+            perl
             pkg-config
             zlib
             # For stripping binaries for release
@@ -41,6 +44,7 @@ let
           ])
           ++ (lib.optionals (!is-darwin) [
             (llvm pkgs.pkgsCross.aarch64-multiplatform.buildPackages).clang
+            (llvm pkgs.pkgsCross.armv7l-hf-multiplatform.buildPackages).clang
           ]);
         # Build variables based on documentation from https://github.com/timniederhausen/gn-build/blob/01c96fd9981b111a3a028356284968acd77fa435/README.md
         shellHook = ''
