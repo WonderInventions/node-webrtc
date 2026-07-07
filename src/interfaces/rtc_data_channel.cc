@@ -106,7 +106,19 @@ void RTCDataChannel::CleanupInternals() {
 
 void RTCDataChannel::OnPeerConnectionClosed() {
   if (_jingleDataChannel != nullptr) {
-    Stop();
+    // NOTE: Calling Stop() directly here would race against any "closed"
+    // state-change notification already in flight from the jingle data
+    // channel's own observer (dispatched from the signaling thread): if
+    // Stop() wins, EventLoop::Run() sees should_stop() and closes the
+    // handle without ever draining the queue, silently dropping the
+    // pending "close" event. Unregister the observer and dispatch our own
+    // HandleStateChange(kClosed) instead, mirroring OnStateChange(); it
+    // calls Stop() itself only after the "close" event has been delivered.
+    CleanupInternals();
+    Dispatch(CreateCallback<RTCDataChannel>([this]() {
+      RTCDataChannel::HandleStateChange(*this,
+                                         webrtc::DataChannelInterface::kClosed);
+    }));
   }
 }
 
