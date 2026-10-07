@@ -7,14 +7,23 @@
  */
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 namespace node_webrtc {
+
+/**
+ * Set from the addon's environment cleanup hook, which Node runs before it
+ * finalizes the remaining wrappers. Those finalizers run in an unspecified
+ * order, so a RefPtr destructor may run after its pointee's wrapper has been
+ * deleted; once this is set, RefPtr stops touching pointees entirely.
+ */
+inline std::atomic<bool> env_tearing_down{false};
 
 /**
  * A class that provides strong ownership of a Napi::ObjectWrap pointer.
  *
  * The underlying value is `Ref()`ed when this is created, and `Unref()`ed when
- * this is destroyed.
+ * this is destroyed (except during environment teardown, see above).
  *
  * We don't provide a `WeakRefPtr` class, because that is effectively just
  * a regular pointer type.
@@ -39,7 +48,7 @@ public:
     }
 
     if (_ptr) {
-      _ptr->Unref();
+      unref();
     }
     _ptr = ptr;
     if (_ptr) {
@@ -55,7 +64,7 @@ public:
   T *operator->() { return _ptr; }
   ~RefPtr() {
     if (_ptr) {
-      _ptr->Unref();
+      unref();
     }
   }
 
@@ -71,7 +80,7 @@ public:
     }
 
     if (_ptr) {
-      _ptr->Unref();
+      unref();
     }
     _ptr = other._ptr;
     if (_ptr) {
@@ -85,7 +94,7 @@ public:
   RefPtr(RefPtr &&other) noexcept : _ptr(other._ptr) { other._ptr = nullptr; }
   RefPtr &operator=(RefPtr &&other) noexcept {
     if (_ptr) {
-      _ptr->Unref();
+      unref();
     }
     _ptr = other._ptr;
     other._ptr = nullptr;
@@ -94,6 +103,12 @@ public:
   }
 
 private:
+  void unref() {
+    if (!env_tearing_down.load()) {
+      _ptr->Unref();
+    }
+  }
+
   T *_ptr;
 };
 

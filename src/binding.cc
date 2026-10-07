@@ -28,12 +28,16 @@
 #include "src/methods/get_user_media.hh"
 #include "src/methods/i420_helpers.hh"
 #include "src/node/error_factory.hh"
+#include "src/node/ref_ptr.hh"
 
 #ifdef DEBUG
 #include "src/test.hh"
 #endif
 
-static void dispose(void *) { node_webrtc::PeerConnectionFactory::Dispose(); }
+static void dispose(void *) {
+  node_webrtc::env_tearing_down = true;
+  node_webrtc::PeerConnectionFactory::Dispose();
+}
 
 static Napi::Object Init(Napi::Env env, Napi::Object exports) {
   node_webrtc::ErrorFactory::Init(env, exports);

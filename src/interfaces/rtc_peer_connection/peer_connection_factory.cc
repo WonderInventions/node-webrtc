@@ -25,6 +25,7 @@
 #include <webrtc/rtc_base/thread.h>
 
 #include "src/functional/maybe.hh"
+#include "src/node/ref_ptr.hh"
 #include "src/webrtc/test_audio_device_module.hh"
 
 namespace node_webrtc {
@@ -114,6 +115,20 @@ PeerConnectionFactory::PeerConnectionFactory(const Napi::CallbackInfo &info)
 }
 
 PeerConnectionFactory::~PeerConnectionFactory() {
+  if (env_tearing_down.load()) {
+    // Node finalizes the remaining wrappers in unspecified order, and the
+    // libwebrtc tracks and peer connections they still own need these threads
+    // to destruct. The process is exiting, so leak everything rather than
+    // crash in whichever finalizer happens to run after this one.
+    (void)_factory.release();
+    (void)_audioDeviceModule.release();
+    (void)_workerThread.release();
+    (void)_signalingThread.release();
+    (void)_networkManager.release();
+    (void)_socketFactory.release();
+    return;
+  }
+
   _factory = nullptr;
 
   _workerThread->BlockingCall([this]() { this->_audioDeviceModule = nullptr; });
@@ -148,7 +163,9 @@ void PeerConnectionFactory::Release() {
   _mutex.lock();
   _references--;
   assert(_references >= 0);
-  if (!_references) {
+  // During environment teardown the default factory's wrapper may already have
+  // been finalized, so `_default` can dangle; Node releases it regardless.
+  if (!_references && !env_tearing_down.load()) {
     assert(_default != nullptr);
     _default->Unref();
     _default = nullptr;
