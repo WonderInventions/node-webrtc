@@ -51,5 +51,42 @@ test("addIceCandidate", (t) => {
       });
   });
 
+  test("rejects after close()", async (t) => {
+    const timers = [];
+    function within(promise, ms) {
+      return Promise.race([
+        promise,
+        new Promise((resolve) =>
+          timers.push(setTimeout(resolve, ms, "pending")),
+        ),
+      ]);
+    }
+    const pc = new RTCPeerConnection();
+    try {
+      await pc.setRemoteDescription(offer);
+      // Wait until the closed signaling state has been handled, which stops
+      // the peer connection's event loop.
+      const closed = new Promise((resolve) => {
+        pc.onsignalingstatechange = () => {
+          if (pc.signalingState === "closed") setImmediate(resolve, "closed");
+        };
+      });
+      pc.close();
+      t.equal(await within(closed, 2000), "closed");
+
+      const outcome = await within(
+        pc.addIceCandidate(candidate).then(
+          () => "resolved",
+          (error) => error.name,
+        ),
+        2000,
+      );
+      t.equal(outcome, "InvalidStateError");
+    } finally {
+      timers.forEach(clearTimeout);
+      pc.close();
+    }
+  });
+
   t.end();
 });
