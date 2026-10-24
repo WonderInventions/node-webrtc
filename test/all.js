@@ -10,6 +10,7 @@ require("./create-offer");
 require("./custom-settings"); // Seems a little slow...
 require("./destructor");
 require("./get-configuration");
+require("./get-stats");
 require("./get-settings");
 require("./i420helpers");
 require("./iceservers");

@@ -70,6 +70,15 @@ protected:
         self->DidStop();
       });
       _lock.unlock();
+      // Dispatch() enqueues nothing once the handle is closing, so this drains
+      // every remaining Event. DidStop() runs on a later loop iteration, so the
+      // target is still alive here.
+      while (auto event = this->Dequeue()) {
+        if (event->DispatchAfterStop()) {
+          Napi::CallbackScope callbackScope(_env, *_context);
+          event->Dispatch(_target);
+        }
+      }
     }
   }
 

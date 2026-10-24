@@ -19,14 +19,19 @@ namespace node_webrtc {
 
 template <typename T, typename F> class Promise : public Event<T> {
 public:
-  Promise(Napi::Promise::Deferred &deferred, F callback)
-      : _callback(callback), _deferred(deferred) {}
+  Promise(Napi::Promise::Deferred &deferred, F callback,
+          bool dispatch_after_stop = false)
+      : _callback(callback), _deferred(deferred),
+        _dispatch_after_stop(dispatch_after_stop) {}
 
   void Dispatch(T &) override { _callback(_deferred); }
+
+  bool DispatchAfterStop() const override { return _dispatch_after_stop; }
 
 private:
   F _callback;
   Napi::Promise::Deferred _deferred;
+  bool _dispatch_after_stop;
 };
 
 template <typename T, typename F>
@@ -37,11 +42,18 @@ std::unique_ptr<Promise<T, F>> CreatePromise(Napi::Promise::Deferred deferred,
 
 template <typename T> class PromiseCreator {
 public:
-  PromiseCreator(T *target, Napi::Promise::Deferred deferred)
-      : _target(target), _deferred(deferred) {}
+  /**
+   * @param dispatch_after_stop settle the Promise if its result was queued
+   * before the target's EventLoop stopped (see Event::DispatchAfterStop)
+   */
+  PromiseCreator(T *target, Napi::Promise::Deferred deferred,
+                 bool dispatch_after_stop = false)
+      : _target(target), _deferred(deferred),
+        _dispatch_after_stop(dispatch_after_stop) {}
 
   template <typename F> void Dispatch(F callback) {
-    _target->Dispatch(std::make_unique<Promise<T, F>>(_deferred, callback));
+    _target->Dispatch(std::make_unique<Promise<T, F>>(_deferred, callback,
+                                                      _dispatch_after_stop));
   }
 
   template <typename F> void Resolve(F value) {
@@ -55,6 +67,7 @@ public:
 private:
   T *_target;
   Napi::Promise::Deferred _deferred;
+  bool _dispatch_after_stop;
 };
 
 } // namespace node_webrtc

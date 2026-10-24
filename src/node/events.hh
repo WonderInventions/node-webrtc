@@ -33,6 +33,12 @@ public:
     // Do nothing.
   }
 
+  /**
+   * Whether the Event is still dispatched when it is dequeued after its
+   * EventLoop stopped. Other Events are dropped at that point.
+   */
+  virtual bool DispatchAfterStop() const { return false; }
+
   static std::unique_ptr<Event<T>> Create() {
     return std::unique_ptr<Event<T>>(new Event<T>());
   }

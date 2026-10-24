@@ -23,9 +23,12 @@ namespace node_webrtc {
 class RTCStatsCollector : public PromiseCreator<RTCPeerConnection>,
                           public webrtc::RTCStatsCollectorCallback {
 public:
+  // libwebrtc's Close() delivers pending stats after the closed signaling
+  // state, which stops the peer connection's EventLoop. Dispatch the queued
+  // result anyway so that getStats() resolves.
   RTCStatsCollector(RTCPeerConnection *peer_connection,
                     Napi::Promise::Deferred deferred)
-      : PromiseCreator<RTCPeerConnection>(peer_connection, deferred) {}
+      : PromiseCreator<RTCPeerConnection>(peer_connection, deferred, true) {}
 
   void OnStatsDelivered(
       const rtc::scoped_refptr<const webrtc::RTCStatsReport> &) override;
